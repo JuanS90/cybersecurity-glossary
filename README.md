@@ -1,26 +1,34 @@
-# Cyber Basics glossary
+# Cyber Basics
 
-Public educational site for the Cyber Basics course and its cybersecurity glossary.
+Cyber Basics es una aplicación educativa para aprender conceptos básicos de ciberseguridad. Reúne un curso interactivo en inglés sencillo y un glosario de amenazas y herramientas de seguridad con traducciones al español.
 
-## Development
+## Qué ofrece
 
-- Node.js 22 or newer
-- `npm install`
-- `npm run dev` to open the local development server
-- `npm run build` to produce the static site in `dist/`
-- `npm run preview` to preview that build locally
+- Siete lecciones con explicaciones, ejemplos y actividades breves.
+- Un glosario alfabético con búsqueda en inglés y español.
+- Definiciones claras para acompañar el aprendizaje de vocabulario de ciberseguridad.
+- Una experiencia pública de consulta que no requiere una cuenta.
 
-The existing course remains in `index.html`. New frontend functionality belongs in `src/`; the Supabase client is prepared in `src/lib/supabase.ts`.
+El contenido educativo se encuentra principalmente en `index.html`. La aplicación también contempla cuentas para estudiantes y docentes, propuestas de cambios y revisión docente. La integración con Supabase está en desarrollo y todavía no está conectada a un proyecto real.
 
-## Supabase configuration
+## Tecnologías
 
-Copy `.env.example` to `.env.local` and set the project URL and public anon/publishable key when the Supabase project is ready. The frontend key is not an administrative secret; database Row Level Security must protect every operation. Never put a `service_role` key in this project or in a `VITE_` variable.
+- **HTML, CSS y JavaScript** para la experiencia web y el contenido educativo.
+- **TypeScript** para las nuevas funciones del cliente.
+- **Vite** para el servidor de desarrollo y la compilación del sitio.
+- **Supabase Auth, PostgreSQL, Row Level Security y Edge Functions** como backend previsto para cuentas y futuras propuestas. La configuración y validación de ese backend siguen pendientes.
 
-No Supabase credentials or student information belong in this repository. The public glossary continues to work without backend configuration while backend tasks are being implemented. There is no signup operation in the browser; roles and account status must come from the protected `profiles` table, never editable user metadata.
+## Ejecutar localmente
 
-## Project decisions and task plan
+Se necesita Node.js 22 o posterior.
 
-The product requirements are in the separate implementation specification; the ordered development tasks are in [docs/IMPLEMENTATION_TASKS.md](docs/IMPLEMENTATION_TASKS.md). The local Git root and configured GitHub remote have been verified. No Supabase project credentials or student data are configured.
+```bash
+npm install
+npm run dev
+```
 
-See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the current hosting status, the copyright item requiring resolution, and publication procedure.
+Para generar una versión estática en `dist/`:
 
+```bash
+npm run build
+```
