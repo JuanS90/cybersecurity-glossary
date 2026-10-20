@@ -16,11 +16,11 @@ The existing course remains in `index.html`. New frontend functionality belongs 
 
 Copy `.env.example` to `.env.local` and set the project URL and public anon/publishable key when the Supabase project is ready. The frontend key is not an administrative secret; database Row Level Security must protect every operation. Never put a `service_role` key in this project or in a `VITE_` variable.
 
-No Supabase credentials or student information belong in this repository. The public glossary continues to work without backend configuration while backend tasks are being implemented.
+No Supabase credentials or student information belong in this repository. The public glossary continues to work without backend configuration while backend tasks are being implemented. There is no signup operation in the browser; roles and account status must come from the protected `profiles` table, never editable user metadata.
 
 ## Project decisions and task plan
 
-The product requirements are in the separate implementation specification; the ordered development tasks are in [docs/IMPLEMENTATION_TASKS.md](docs/IMPLEMENTATION_TASKS.md). Before adding student accounts, proposals, or live data, confirm that this directory has its own correctly configured Git repository and remote.
+The product requirements are in the separate implementation specification; the ordered development tasks are in [docs/IMPLEMENTATION_TASKS.md](docs/IMPLEMENTATION_TASKS.md). The local Git root and configured GitHub remote have been verified. No Supabase project credentials or student data are configured.
 
-See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the current GitHub Pages recommendation, its limits for future password flows, and the publication procedure. This local project does not yet have a GitHub remote.
+See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the current hosting status, the copyright item requiring resolution, and publication procedure.
 

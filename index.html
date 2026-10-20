@@ -139,6 +139,124 @@
         font: 800 30px/1 var(--display);
       }
 
+      .account-control {
+        margin-block: 18px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+        font-size: 14px;
+      }
+
+      .account-control summary {
+        color: var(--accent);
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .account-control form,
+      .account-control .account-card {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .account-control label {
+        display: grid;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .account-control input {
+        width: 100%;
+        min-width: 0;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+      }
+
+      .account-control button {
+        padding: 8px 10px;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        background: var(--accent);
+        color: var(--on-accent);
+        cursor: pointer;
+        font: 700 13px var(--body);
+      }
+
+      .account-control button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+      }
+
+      .account-control .account-message {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .account-control .account-message[data-kind="error"] {
+        color: var(--flag);
+      }
+
+      .account-control .account-role {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .account-control .account-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .account-control .managed-account {
+        display: grid;
+        gap: 5px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+      }
+
+      .account-control .managed-account-identity {
+        overflow-wrap: anywhere;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .account-control .managed-account-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .account-control .managed-account-actions button {
+        padding: 5px 7px;
+        background: var(--surface);
+        color: var(--accent);
+        font-size: 12px;
+      }
+
+      .account-control .temporary-password {
+        padding: 8px;
+        border-radius: 6px;
+        background: var(--warn-soft);
+      }
+
+      .account-control .account-password {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+        font: 500 13px var(--mono);
+        user-select: all;
+      }
+
       .rail {
         position: sticky;
         top: calc(16px + env(safe-area-inset-top, 0px));
@@ -1793,6 +1911,7 @@
         <div class="brand">
           <small>English × Cybersecurity</small><b>Cyber Basics</b>
         </div>
+        <div id="account-control" class="account-control"></div>
         <span class="note" id="prog-t">0 of 7 lessons completed</span>
         <div class="progress"><i id="prog" style="width: 0%"></i></div>
         <ol class="lessons" id="lessons"></ol>
