@@ -1,0 +1,3511 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Cyber Basics</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;1,6..12,400&family=JetBrains+Mono:wght@500&display=swap"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      img {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <style>
+      /* Layout: course shell — lesson rail (sidebar on desktop, scroll strip on phone) + one lesson panel at a time with a practice activity + prev/next; last step is a certificate. */
+      :root {
+        --bg: #f3f6f5;
+        --surface: #ffffff;
+        --ink: #122420;
+        --muted: #56655f;
+        --line: #d5dfdb;
+        --accent: #0b7d6b;
+        --accent-soft: #dcf1ec;
+        --on-accent: #ffffff;
+        --flag: #d23a2a;
+        --flag-soft: #fde6e2;
+        --good: #1f8a4c;
+        --good-soft: #dff3e6;
+        --warn: #b76a00;
+        --warn-soft: #fdf0d9;
+        --hl: #fff1a8;
+        --scene: #e6f0ec;
+        --display: "Bricolage Grotesque", "Segoe UI", sans-serif;
+        --body: "Nunito Sans", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0e1614;
+          --surface: #16211e;
+          --ink: #e4eeea;
+          --muted: #9db0a9;
+          --line: #2a3a35;
+          --accent: #4fd1b5;
+          --accent-soft: #173a33;
+          --on-accent: #08201b;
+          --flag: #ff8a7a;
+          --flag-soft: #3d1d19;
+          --good: #6fdc9a;
+          --good-soft: #163424;
+          --warn: #f2b45a;
+          --warn-soft: #3a2c14;
+          --hl: #51481a;
+          --scene: #111c19;
+          color-scheme: dark;
+        }
+      }
+
+      :root[data-theme="dark"] {
+        --bg: #0e1614;
+        --surface: #16211e;
+        --ink: #e4eeea;
+        --muted: #9db0a9;
+        --line: #2a3a35;
+        --accent: #4fd1b5;
+        --accent-soft: #173a33;
+        --on-accent: #08201b;
+        --flag: #ff8a7a;
+        --flag-soft: #3d1d19;
+        --good: #6fdc9a;
+        --good-soft: #163424;
+        --warn: #f2b45a;
+        --warn-soft: #3a2c14;
+        --hl: #51481a;
+        --scene: #111c19;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--body);
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      .shell {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding-inline: 16px;
+        padding-block: 24px 56px;
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      @media (max-width: 820px) {
+        .shell {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .brand {
+        display: grid;
+        gap: 2px;
+        margin-bottom: 14px;
+      }
+
+      .brand small {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .brand b {
+        font: 800 30px/1 var(--display);
+      }
+
+      .rail {
+        position: sticky;
+        top: calc(16px + env(safe-area-inset-top, 0px));
+      }
+
+      @media (max-width: 820px) {
+        .rail {
+          position: static;
+        }
+      }
+
+      .progress {
+        height: 8px;
+        background: var(--line);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-block: 4px 14px;
+      }
+
+      .progress i {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.4s;
+      }
+
+      .lessons {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+      }
+
+      @media (max-width: 820px) {
+        .lessons {
+          display: flex;
+          overflow-x: auto;
+          gap: 6px;
+          padding-bottom: 6px;
+        }
+      }
+
+      .lessons button {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        text-align: left;
+        font: 600 15px var(--body);
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 9px 10px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 820px) {
+        .lessons button {
+          white-space: nowrap;
+          border-color: var(--line);
+          background: var(--surface);
+        }
+      }
+
+      .lessons button:hover {
+        background: var(--surface);
+      }
+
+      .lessons button[aria-current="step"] {
+        background: var(--surface);
+        border-color: var(--accent);
+      }
+
+      .lessons .n {
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font: 500 13px var(--mono);
+        border: 1.5px solid var(--line);
+        color: var(--muted);
+      }
+
+      .lessons .done .n {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--on-accent);
+      }
+
+      .toggle {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 15px;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      @media (max-width: 820px) {
+        .toggle {
+          margin-top: 8px;
+        }
+      }
+
+      .panel {
+        display: grid;
+        gap: 22px;
+        min-width: 0;
+      }
+
+      .lesson-head {
+        display: grid;
+        gap: 6px;
+      }
+
+      .eyebrow {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      h1 {
+        font: 800 clamp(32px, 5.5vw, 52px)/1.02 var(--display);
+        margin: 0;
+        text-wrap: balance;
+      }
+
+      h2 {
+        font: 700 24px/1.15 var(--display);
+        margin: 0;
+        text-wrap: balance;
+      }
+
+      h3 {
+        font: 700 19px var(--display);
+        margin: 0;
+      }
+
+      .lead {
+        font-size: 19px;
+        color: var(--muted);
+        margin: 0;
+        max-width: 62ch;
+      }
+
+      .prose {
+        display: grid;
+        gap: 12px;
+        max-width: 66ch;
+      }
+
+      .prose p {
+        margin: 0;
+      }
+
+      .box {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .activity {
+        border: 2px solid var(--accent);
+      }
+
+      .activity > .eyebrow::before {
+        content: "✎ ";
+      }
+
+      .v {
+        font: inherit;
+        font-weight: 700;
+        color: inherit;
+        background: linear-gradient(transparent 60%, var(--accent-soft) 60%);
+        border: 0;
+        padding: 0 1px;
+        cursor: help;
+        position: relative;
+      }
+
+      .v .es {
+        display: none;
+      }
+
+      body.es .v .es {
+        display: inline;
+        font-weight: 400;
+        font-style: italic;
+        color: var(--muted);
+        font-size: 0.85em;
+        margin-left: 3px;
+      }
+
+      body.es .v .es::before {
+        content: "(";
+      }
+
+      body.es .v .es::after {
+        content: ")";
+      }
+
+      .words {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .word {
+        font-size: 14px;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        padding: 4px 12px;
+        background: var(--bg);
+      }
+
+      .word b {
+        font-weight: 700;
+      }
+
+      .word i {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 12px;
+      }
+
+      .grid.g3 {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .mini {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        display: grid;
+        gap: 6px;
+        align-content: start;
+      }
+
+      .mini p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .mini .lbl {
+        font: 500 11px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .btn {
+        font: 700 15px var(--body);
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--on-accent);
+      }
+
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      label:focus-within {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+      }
+
+      .opts {
+        display: grid;
+        gap: 8px;
+      }
+
+      .opt {
+        font: 600 16px var(--body);
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .opt.right {
+        border-color: var(--good);
+        background: var(--good-soft);
+      }
+
+      .opt.wrong {
+        border-color: var(--flag);
+        background: var(--flag-soft);
+      }
+
+      .fb {
+        margin: 0;
+        font-weight: 700;
+        min-height: 1.5em;
+      }
+
+      .fb.good {
+        color: var(--good);
+      }
+
+      .fb.bad {
+        color: var(--flag);
+      }
+
+      /* password meter */
+      .pw {
+        font: 500 18px var(--mono);
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .meter {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .meter i {
+        height: 10px;
+        border-radius: 5px;
+        background: var(--line);
+      }
+
+      .checks {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+        font-size: 15px;
+      }
+
+      .checks li::before {
+        content: "○ ";
+        color: var(--muted);
+      }
+
+      .checks li.ok::before {
+        content: "● ";
+        color: var(--good);
+      }
+
+      .verdict {
+        font: 700 18px var(--display);
+        margin: 0;
+      }
+
+      .note {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* email */
+      .mail {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .mail-h {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        gap: 2px;
+        font-size: 15px;
+      }
+
+      .mail-h .from {
+        font-family: var(--mono);
+        font-size: 14px;
+        word-break: break-all;
+      }
+
+      .mail-b {
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .mail-b p {
+        margin: 0;
+      }
+
+      .flag {
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: 0;
+        border-bottom: 2px dotted var(--muted);
+        padding: 0;
+        cursor: pointer;
+        text-align: inherit;
+      }
+
+      .flag.found {
+        background: var(--flag-soft);
+        border-bottom: 2px solid var(--flag);
+        color: var(--ink);
+      }
+
+      .fakebtn {
+        display: inline-block;
+        background: var(--flag);
+        color: var(--surface);
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 8px 14px;
+        border-bottom: 0;
+      }
+
+      .fakebtn.found {
+        background: var(--flag);
+        color: var(--surface);
+        outline: 3px solid var(--flag-soft);
+      }
+
+      .found-list {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 6px;
+        font-size: 15px;
+      }
+
+      .found-list b {
+        color: var(--flag);
+      }
+
+      .chipbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pill {
+        font: 500 13px var(--mono);
+        padding: 4px 10px;
+        border-radius: 99px;
+        background: var(--accent-soft);
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* sms sort */
+      .sms {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 16px 16px 16px 4px;
+        padding: 12px 14px;
+        max-width: 46ch;
+        font-size: 16px;
+      }
+
+      .sms small {
+        display: block;
+        font: 500 12px var(--mono);
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .tagline {
+        font: 500 12px var(--mono);
+        padding: 2px 8px;
+        border-radius: 99px;
+      }
+
+      .tagline.bad {
+        background: var(--flag-soft);
+        color: var(--flag);
+      }
+
+      .tagline.good {
+        background: var(--good-soft);
+        color: var(--good);
+      }
+
+      .tagline.warn {
+        background: var(--warn-soft);
+        color: var(--warn);
+      }
+
+      /* post or not */
+      .posts {
+        display: grid;
+        gap: 10px;
+      }
+
+      .post {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+
+      .post p {
+        margin: 0;
+      }
+
+      .post .why {
+        grid-column: 1/-1;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .post .act {
+        display: flex;
+        gap: 6px;
+      }
+
+      .sm {
+        font: 700 13px var(--body);
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      /* certificate */
+      .cert {
+        border: 3px double var(--accent);
+        border-radius: 16px;
+        padding: 32px 22px;
+        text-align: center;
+        display: grid;
+        gap: 10px;
+        background: var(--surface);
+      }
+
+      .cert .big {
+        font: 800 clamp(28px, 6vw, 46px)/1.05 var(--display);
+        margin: 0;
+      }
+
+      .cert .name {
+        font: 700 clamp(24px, 5vw, 34px) var(--display);
+        color: var(--accent);
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 6px;
+        margin-inline: auto;
+        min-width: min(320px, 100%);
+      }
+
+      .cert ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 14px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .row input {
+        flex: 1 1 220px;
+        min-width: 0;
+        font: 17px var(--body);
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 15px;
+      }
+
+      td,
+      th {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .tw {
+        overflow-x: auto;
+      }
+
+      /* ===== animated scenes */
+      .scene {
+        margin: 0;
+        background: var(--scene);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .scene .stage {
+        overflow-x: auto;
+      }
+
+      .scene svg {
+        display: block;
+        width: 100%;
+        min-width: 480px;
+        height: auto;
+        fill: var(--ink);
+      }
+
+      .scene svg text {
+        font-family: var(--body);
+        font-weight: 700;
+        font-size: 15px;
+      }
+
+      .scene figcaption {
+        padding: 10px 14px;
+        font-size: 15px;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .scene figcaption span {
+        flex: 1 1 260px;
+        min-width: 0;
+      }
+
+      .scene.paused * {
+        animation-play-state: paused !important;
+      }
+
+      .fs {
+        fill: var(--surface);
+      }
+
+      .fa {
+        fill: var(--accent);
+      }
+
+      .fas {
+        fill: var(--accent-soft);
+      }
+
+      .ff {
+        fill: var(--flag);
+      }
+
+      .ffs {
+        fill: var(--flag-soft);
+      }
+
+      .fg {
+        fill: var(--good);
+      }
+
+      .fw {
+        fill: var(--warn);
+      }
+
+      .fi {
+        fill: var(--ink);
+      }
+
+      .fl {
+        fill: var(--line);
+      }
+
+      .fm {
+        fill: var(--muted);
+      }
+
+      .fn {
+        fill: none;
+      }
+
+      .si {
+        stroke: var(--ink);
+        stroke-width: 2.5;
+      }
+
+      .sa {
+        stroke: var(--accent);
+      }
+
+      .sf {
+        stroke: var(--flag);
+      }
+
+      .sg {
+        stroke: var(--good);
+      }
+
+      .ss {
+        stroke: var(--surface);
+      }
+
+      .sl {
+        stroke: var(--line);
+      }
+
+      .mono {
+        font-family: var(--mono) !important;
+        font-weight: 500 !important;
+      }
+
+      /* S1 shield */
+      .ring {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: spin 18s linear infinite;
+      }
+
+      .pulse {
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+
+      .atk {
+        opacity: 0;
+        animation: atk 4s linear infinite both;
+      }
+
+      .msgp {
+        animation: msgp 4s ease-in 0.5s infinite both;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.45;
+        }
+      }
+
+      @keyframes atk {
+        0% {
+          transform: translate(var(--x0), var(--y0)) scale(1);
+          opacity: 0;
+        }
+
+        10% {
+          opacity: 1;
+        }
+
+        50% {
+          transform: translate(var(--x1), var(--y1)) scale(1);
+          opacity: 1;
+        }
+
+        62%,
+        100% {
+          transform: translate(var(--x1), var(--y1)) scale(2);
+          opacity: 0;
+        }
+      }
+
+      @keyframes msgp {
+        0% {
+          transform: translate(300px, 260px);
+        }
+
+        70%,
+        100% {
+          transform: translate(300px, 140px);
+        }
+      }
+
+      /* S2 brute force */
+      .bf {
+        padding: 18px 16px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .lane {
+        display: grid;
+        gap: 8px;
+      }
+
+      .lane-h {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .lane-h .lbl {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .lane .st {
+        font: 700 14px var(--body);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .lane .st.bad {
+        color: var(--flag);
+      }
+
+      .lane .st.good {
+        color: var(--good);
+      }
+
+      .slotrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+      }
+
+      .ch {
+        width: 24px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        font: 500 17px var(--mono);
+        border-radius: 5px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      .ch.fix {
+        color: var(--ink);
+        border-color: var(--flag);
+        background: var(--flag-soft);
+      }
+
+      .scene svg.lock {
+        width: 30px;
+        min-width: 0;
+        height: 34px;
+        margin-left: 8px;
+        flex: none;
+      }
+
+      .robot {
+        font: 500 13px var(--mono);
+        color: var(--muted);
+      }
+
+      /* S3 fish */
+      .wave {
+        animation: wave 3s linear infinite;
+      }
+
+      .bait {
+        animation: bait 9s ease-out infinite both;
+      }
+
+      .fish {
+        animation: fish 9s ease-in-out infinite both;
+      }
+
+      .qm {
+        opacity: 0;
+        animation: qm 9s infinite both;
+      }
+
+      .hook {
+        opacity: 0;
+        animation: hook 9s infinite both;
+      }
+
+      @keyframes wave {
+        to {
+          transform: translateX(-120px);
+        }
+      }
+
+      @keyframes bait {
+        0% {
+          transform: translateY(-170px);
+        }
+
+        14%,
+        92% {
+          transform: translateY(0);
+        }
+
+        100% {
+          transform: translateY(-170px);
+        }
+      }
+
+      @keyframes fish {
+        0% {
+          transform: translate(-70px, 165px) scale(1, 1);
+        }
+
+        32% {
+          transform: translate(282px, 142px) scale(1, 1);
+        }
+
+        46% {
+          transform: translate(287px, 139px) scale(1, 1);
+        }
+
+        57% {
+          transform: translate(282px, 152px) scale(-1, 1);
+        }
+
+        88%,
+        100% {
+          transform: translate(-80px, 175px) scale(-1, 1);
+        }
+      }
+
+      @keyframes qm {
+        0%,
+        36% {
+          opacity: 0;
+        }
+
+        40%,
+        54% {
+          opacity: 1;
+        }
+
+        58%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes hook {
+        0%,
+        47% {
+          opacity: 0;
+        }
+
+        53%,
+        90% {
+          opacity: 1;
+        }
+
+        94%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* S4 trojan */
+      .gift {
+        animation: gift 10s ease-in-out infinite both;
+      }
+
+      .dl {
+        opacity: 0;
+        animation: dl 10s infinite both;
+      }
+
+      .dlbar {
+        transform-box: fill-box;
+        transform-origin: left center;
+        animation: dlbar 10s infinite both;
+      }
+
+      .bug {
+        opacity: 0;
+        animation: bug 10s ease-out infinite both;
+      }
+
+      .alert {
+        opacity: 0;
+        animation: alert 10s infinite both;
+      }
+
+      .scan {
+        opacity: 0;
+        animation: scan 10s linear infinite both;
+      }
+
+      .okc {
+        opacity: 0;
+        animation: okc 10s infinite both;
+      }
+
+      @keyframes gift {
+        0% {
+          transform: translate(-60px, 112px) scale(1);
+          opacity: 1;
+        }
+
+        14% {
+          transform: translate(300px, 105px) scale(1);
+          opacity: 1;
+        }
+
+        20%,
+        100% {
+          transform: translate(300px, 105px) scale(0.2);
+          opacity: 0;
+        }
+      }
+
+      @keyframes dl {
+        0%,
+        18% {
+          opacity: 0;
+        }
+
+        20%,
+        32% {
+          opacity: 1;
+        }
+
+        35%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes dlbar {
+        0%,
+        20% {
+          transform: scaleX(0);
+        }
+
+        32%,
+        100% {
+          transform: scaleX(1);
+        }
+      }
+
+      @keyframes bug {
+        0%,
+        33% {
+          transform: translate(300px, 105px) rotate(0);
+          opacity: 0;
+        }
+
+        37% {
+          opacity: 1;
+        }
+
+        50% {
+          transform: translate(var(--bx), var(--by)) rotate(25deg);
+          opacity: 1;
+        }
+
+        55% {
+          transform: translate(var(--bx), var(--by)) rotate(-25deg);
+        }
+
+        62% {
+          transform: translate(var(--bx), var(--by)) rotate(15deg);
+          opacity: 1;
+        }
+
+        70%,
+        100% {
+          transform: translate(var(--bx), var(--by)) scale(0.2);
+          opacity: 0;
+        }
+      }
+
+      @keyframes alert {
+        0%,
+        38% {
+          opacity: 0;
+        }
+
+        42%,
+        60% {
+          opacity: 1;
+        }
+
+        64%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes scan {
+        0%,
+        61% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+
+        62% {
+          opacity: 1;
+        }
+
+        73% {
+          transform: translateX(208px);
+          opacity: 1;
+        }
+
+        75%,
+        100% {
+          transform: translateX(208px);
+          opacity: 0;
+        }
+      }
+
+      @keyframes okc {
+        0%,
+        75% {
+          opacity: 0;
+        }
+
+        79%,
+        95% {
+          opacity: 1;
+        }
+
+        98%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* S5 footprints */
+      .foot {
+        opacity: 0;
+        animation: foot 10s infinite both;
+      }
+
+      .ftag {
+        opacity: 0;
+        animation: ftag 10s infinite both;
+      }
+
+      .mag {
+        opacity: 0;
+        animation: mag 10s ease-in-out infinite both;
+      }
+
+      .pcard {
+        opacity: 0;
+        animation: pcard 10s infinite both;
+      }
+
+      @keyframes foot {
+        0% {
+          opacity: 0;
+          transform: translate(var(--fx), var(--fy)) rotate(var(--r)) scale(0.5);
+        }
+
+        5%,
+        90% {
+          opacity: 1;
+          transform: translate(var(--fx), var(--fy)) rotate(var(--r)) scale(1);
+        }
+
+        96%,
+        100% {
+          opacity: 0;
+          transform: translate(var(--fx), var(--fy)) rotate(var(--r)) scale(1);
+        }
+      }
+
+      @keyframes ftag {
+        0%,
+        3% {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+
+        8%,
+        90% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        96%,
+        100% {
+          opacity: 0;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes mag {
+        0%,
+        50% {
+          opacity: 0;
+          transform: translate(10px, 150px);
+        }
+
+        54% {
+          opacity: 1;
+        }
+
+        78% {
+          opacity: 1;
+          transform: translate(380px, 150px);
+        }
+
+        82%,
+        100% {
+          opacity: 0;
+          transform: translate(380px, 150px);
+        }
+      }
+
+      @keyframes pcard {
+        0%,
+        76% {
+          opacity: 0;
+          transform: translateX(14px);
+        }
+
+        80%,
+        95% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
+        99%,
+        100% {
+          opacity: 0;
+          transform: translateX(0);
+        }
+      }
+
+      /* S6 wifi */
+      .pkt {
+        opacity: 0;
+        animation: pkt 4.5s linear infinite both;
+      }
+
+      @keyframes pkt {
+        0% {
+          transform: translate(110px, 120px);
+          opacity: 0;
+        }
+
+        8%,
+        88% {
+          opacity: 1;
+        }
+
+        100% {
+          transform: translate(470px, 120px);
+          opacity: 0;
+        }
+      }
+
+      .scene:not(.vpn) .enc,
+      .scene.vpn .plain {
+        display: none;
+      }
+
+      /* timeline */
+      .tl {
+        display: grid;
+      }
+
+      .tl-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 18px 18px 6px;
+      }
+
+      .tl-year {
+        font: 800 clamp(48px, 11vw, 84px)/0.9 var(--display);
+        font-variant-numeric: tabular-nums;
+        color: var(--ink);
+      }
+
+      .tl-era {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 99px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+
+      .tl-scroll {
+        overflow-x: auto;
+        padding: 14px 18px 6px;
+      }
+
+      .tl-track {
+        position: relative;
+        height: 64px;
+        min-width: 520px;
+      }
+
+      .tl-band {
+        position: absolute;
+        top: 22px;
+        height: 16px;
+        border-radius: 8px;
+      }
+
+      .tl-band.e1 {
+        background: var(--accent-soft);
+      }
+
+      .tl-band.e2 {
+        background: var(--warn-soft);
+      }
+
+      .tl-band.e3 {
+        background: var(--flag-soft);
+      }
+
+      .tl-dot {
+        position: absolute;
+        top: 24px;
+        width: 12px;
+        height: 12px;
+        margin-left: -6px;
+        border-radius: 50%;
+        border: 2px solid var(--ink);
+        background: var(--surface);
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .tl-dot.on {
+        background: var(--ink);
+      }
+
+      .tl-mark {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 60px;
+        margin-left: -1px;
+        background: var(--flag);
+        transition: left 0.6s cubic-bezier(0.3, 0.7, 0.3, 1);
+      }
+
+      .tl-mark::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -5px;
+        border: 6px solid transparent;
+        border-top-color: var(--flag);
+      }
+
+      .tl-axis {
+        position: absolute;
+        top: 46px;
+        font: 500 11px var(--mono);
+        color: var(--muted);
+        transform: translateX(-50%);
+      }
+
+      .tl-card {
+        margin: 8px 18px 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+        display: grid;
+        gap: 8px;
+        animation: pop 0.45s ease-out both;
+      }
+
+      .tl-card h3 {
+        font-size: 22px;
+      }
+
+      .tl-card p {
+        margin: 0;
+      }
+
+      .tl-tag {
+        justify-self: start;
+        font: 500 11px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: var(--flag-soft);
+        color: var(--flag);
+      }
+
+      .linkbtn {
+        justify-self: start;
+        font: 700 14px var(--body);
+        color: var(--accent);
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      @keyframes pop {
+        from {
+          opacity: 0.2;
+          transform: translateY(10px) scale(0.98);
+        }
+      }
+
+      /* glossary */
+      .gbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .gbar input {
+        flex: 1 1 240px;
+        min-width: 0;
+        font: 17px var(--body);
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+      }
+
+      .chip2 {
+        font: 700 14px var(--body);
+        padding: 7px 12px;
+        border-radius: 99px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .chip2[aria-pressed="true"] {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--bg);
+      }
+
+      .letters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .letters button {
+        font: 500 14px var(--mono);
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--accent);
+        cursor: pointer;
+      }
+
+      .glist {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+      }
+
+      .gi {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        display: grid;
+        gap: 6px;
+        align-content: start;
+        scroll-margin-top: 16px;
+        min-width: 0;
+      }
+
+      .gi h3 {
+        font-size: 19px;
+      }
+
+      .gi .es {
+        font-style: italic;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .gi p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .gi .meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .gi .kind {
+        font: 500 11px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+
+      .gi .kind.t {
+        background: var(--flag-soft);
+        color: var(--flag);
+      }
+
+      .gi .kind.d {
+        background: var(--good-soft);
+        color: var(--good);
+      }
+
+      .gi .pg {
+        font: 500 12px var(--mono);
+        color: var(--muted);
+      }
+
+      .gi.hit {
+        outline: 2px solid var(--accent);
+      }
+
+      .lessons .sep {
+        font: 500 11px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 12px 10px 2px;
+      }
+
+      @media (max-width: 820px) {
+        .lessons .sep {
+          display: none;
+        }
+      }
+
+      .panel > * {
+        animation: rise 0.45s ease-out both;
+      }
+
+      .panel > *:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+
+      .panel > *:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+
+      .panel > *:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0.3;
+          transform: translateY(10px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+
+        .panel > * {
+          animation: none;
+        }
+      }
+    </style>
+
+    <div class="shell">
+      <aside class="rail">
+        <div class="brand">
+          <small>English × Cybersecurity</small><b>Cyber Basics</b>
+        </div>
+        <span class="note" id="prog-t">0 of 7 lessons completed</span>
+        <div class="progress"><i id="prog" style="width: 0%"></i></div>
+        <ol class="lessons" id="lessons"></ol>
+        <label class="toggle"
+          ><input type="checkbox" id="es-t" /> Show Spanish help</label
+        >
+      </aside>
+      <main class="panel" id="panel"></main>
+    </div>
+
+    <script>
+      // v("word","spanish") — vocabulary marker
+      const v = (w, es) =>
+        `<button class="v" type="button" title="${es}">${w}<span class="es">${es}</span></button>`;
+      const words = (list) =>
+        `<div class="words">${list.map(([a, b]) => `<span class="word"><b>${a}</b> · <i>${b}</i></span>`).join("")}</div>`;
+      const quiz = (id, q, opts, right, exp) =>
+        `<div class="box activity" data-quiz="${id}"><span class="eyebrow">Quick check</span><h3>${q}</h3><div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}" data-r="${right}">${o}</button>`).join("")}</div><p class="fb" data-exp="${exp.replace(/"/g, "&quot;")}"></p></div>`;
+
+      // ===== animated scenes
+      const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const scene = (body, cap, extra = "", id = "") =>
+        `<figure class="scene${RM ? " paused" : ""}"${id ? ` id="${id}"` : ""}><div class="stage">${body}</div><figcaption><span>${cap}</span>${extra}<button class="sm playbtn" type="button">${RM ? "Play" : "Pause"}</button></figcaption></figure>`;
+      const atk = (x0, y0, x1, y1, label, d) =>
+        `<g class="atk" style="--x0:${x0}px;--y0:${y0}px;--x1:${x1}px;--y1:${y1}px;animation-delay:${d}s"><circle r="13" class="ff"/><text y="6" text-anchor="middle" class="fs" style="font-size:17px">!</text><text y="-20" text-anchor="middle" class="ff" style="font-size:14px">${label}</text></g>`;
+      const S1 = () =>
+        scene(
+          `<svg viewBox="0 0 600 240" role="img" aria-label="Red attacks fly toward a phone and break against a shield, while a green message gets through">
+ <text x="300" y="24" text-anchor="middle" class="fa mono" style="font-size:13px;letter-spacing:.12em">GOOD HABITS = YOUR SHIELD</text>
+ <circle cx="300" cy="125" r="85" class="fas pulse"/>
+ <circle cx="300" cy="125" r="85" class="fn sa ring" stroke-width="3" stroke-dasharray="8 7"/>
+ <g class="msgp"><rect x="-17" y="-12" width="34" height="24" rx="3" class="fg"/><path d="M-17 -12 L0 2 L17 -12" class="fn ss" stroke-width="2"/></g>
+ <rect x="276" y="80" width="48" height="90" rx="9" class="fs si"/>
+ <rect x="282" y="90" width="36" height="62" rx="3" class="fas"/>
+ <path d="M292 121 l6 6 l11 -13" class="fn sa" stroke-width="3" stroke-linecap="round"/>
+ <circle cx="300" cy="162" r="3" class="fi"/>
+ ${atk(20, 50, 219, 100, "virus", 0)}${atk(580, 50, 381, 100, "hacker", 1)}${atk(30, 225, 219, 152, "phishing", 2)}${atk(570, 225, 381, 152, "scam", 3)}
+</svg>`,
+          "Good habits work like a shield: attacks break against it, and your normal messages still get through.",
+        );
+
+      const lockSvg = (open) =>
+        `<svg class="lock" viewBox="0 0 30 34" aria-hidden="true"><path d="${open ? "M8 15 V9 a7 7 0 0 1 14 0 V6" : "M8 15 V10 a7 7 0 0 1 14 0 V15"}" fill="none" stroke="${open ? "var(--flag)" : "var(--good)"}" stroke-width="3" stroke-linecap="round"/><rect x="3" y="15" width="24" height="17" rx="3" fill="${open ? "var(--flag)" : "var(--good)"}"/></svg>`;
+      const S2 = () =>
+        scene(
+          `<div class="bf">
+ <div class="robot">🤖 attack program · trying combinations...</div>
+ <div class="lane"><div class="lane-h"><span class="lbl">Short password</span><span class="st" id="bfa-st"></span></div><div class="slotrow" id="bfa"></div></div>
+ <div class="lane"><div class="lane-h"><span class="lbl">Long passphrase</span><span class="st" id="bfb-st"></span></div><div class="slotrow" id="bfb"></div></div>
+</div>`,
+          "Attack programs try billions of guesses. A short password falls in seconds; a long passphrase resists for years.",
+          "",
+          "bf-scene",
+        );
+
+      let wave = "M0 44";
+      for (let k = 0; k < 7; k++) wave += " q30 -10 60 0 q30 10 60 0";
+      wave += " V240 H0 Z";
+      const S3 = () =>
+        scene(
+          `<svg viewBox="0 0 600 240" role="img" aria-label="An email hangs on a fishing line as bait; a fish comes close, sees the hidden hook and swims away">
+ <path class="fas wave" d="${wave}"/>
+ <g class="bait">
+  <line x1="360" y1="-180" x2="360" y2="96" class="si" stroke-width="1.5"/>
+  <g class="hook"><path d="M360 132 V156 A10 10 0 0 1 340 156 l-3 -9" class="fn sf" stroke-width="3.5" stroke-linecap="round"/><text x="374" y="166" class="ff" style="font-size:15px">hook = a fake link</text></g>
+  <rect x="332" y="96" width="56" height="36" rx="4" class="fs si"/>
+  <path d="M332 96 L360 116 L388 96" class="fn si" stroke-width="2"/>
+  <text x="398" y="120" class="fi" style="font-size:15px">“You won a prize!”</text>
+ </g>
+ <g class="fish"><path d="M-26 0 L-50 -17 L-50 17 Z" class="fw"/><ellipse rx="32" ry="19" class="fw"/><path d="M-4 -18 q8 -10 18 -2" class="fn" stroke="var(--warn)" stroke-width="5"/><circle cx="16" cy="-5" r="4.5" class="fs"/><circle cx="17" cy="-5" r="2.2" class="fi"/></g>
+ <text x="316" y="116" class="qm fi" style="font-size:28px">?</text>
+ <text x="20" y="30" class="fm mono" style="font-size:13px;letter-spacing:.1em">PHISHING = FISHING FOR YOUR DATA</text>
+</svg>`,
+          "The message is the bait and the fake link is the hook. Be the fish that stops, thinks and swims away.",
+        );
+
+      const bug = (x, y) =>
+        `<g class="bug" style="--bx:${x}px;--by:${y}px"><path d="M-10 -6 L10 6 M-10 6 L10 -6 M0 -9 V9" class="sf" stroke-width="2"/><ellipse rx="8" ry="6" class="ff"/><circle cx="8" cy="0" r="3.5" class="ff"/></g>`;
+      const S4 = () =>
+        scene(
+          `<svg viewBox="0 0 600 240" role="img" aria-label="A free game gift enters a laptop, bugs come out, and an antivirus scan removes them">
+ <rect x="180" y="28" width="240" height="152" rx="10" class="fs si"/>
+ <rect x="192" y="40" width="216" height="128" rx="4" class="fas"/>
+ <path d="M150 180 H450 L472 204 H128 Z" class="fl si"/>
+ <rect x="192" y="40" width="216" height="128" rx="4" class="ffs alert"/>
+ <g class="dl"><text x="300" y="96" text-anchor="middle" class="fi" style="font-size:14px">Downloading FREE_GAME.exe…</text><rect x="220" y="108" width="160" height="10" rx="5" class="fs"/><rect x="220" y="108" width="160" height="10" rx="5" class="fa dlbar"/></g>
+ <text x="300" y="110" text-anchor="middle" class="ff alert" style="font-size:16px">Malware is stealing your data!</text>
+ ${bug(225, 62)}${bug(375, 62)}${bug(212, 130)}${bug(388, 130)}${bug(260, 152)}${bug(340, 152)}
+ <rect x="192" y="40" width="8" height="128" class="fg scan"/>
+ <g class="okc"><circle cx="300" cy="86" r="22" class="fg"/><path d="M289 86 l8 8 l14 -16" class="fn ss" stroke-width="4" stroke-linecap="round"/><text x="300" y="138" text-anchor="middle" class="fg" style="font-size:15px">Antivirus: 6 threats removed</text></g>
+ <g class="gift"><rect x="-28" y="-24" width="56" height="48" rx="4" class="fw si"/><rect x="-5" y="-24" width="10" height="48" class="ff"/><path d="M0 -24 q-16 -16 -20 -4 q4 6 20 4 q16 2 20 -4 q-4 -12 -20 4" class="ff si" stroke-width="1.5"/><text y="44" text-anchor="middle" class="fi" style="font-size:14px">FREE GAME</text></g>
+ <text x="20" y="226" class="fm mono" style="font-size:13px;letter-spacing:.1em">TROJAN HORSE → ANTIVIRUS</text>
+</svg>`,
+          "A Trojan looks like a free gift, but it hides malware inside. An antivirus finds it and removes it.",
+        );
+
+      const FEET = [
+        [62, 208, 80, "pet's name"],
+        [140, 172, 100, "school"],
+        [218, 208, 80, "birthday"],
+        [296, 172, 100, "street"],
+        [374, 208, 80, "on vacation"],
+      ];
+      const S5 = () =>
+        scene(
+          `<svg viewBox="0 0 600 240" role="img" aria-label="Footprints appear, each one a post; a magnifying glass follows them and builds a profile of you">
+ ${FEET.map(
+   (
+     [x, y, r, l],
+     k,
+   ) => `<g class="foot" style="--fx:${x}px;--fy:${y}px;--r:${r}deg;animation-delay:${k * 0.8}s"><ellipse rx="9" ry="15" class="fa"/><circle cx="-5" cy="-19" r="3" class="fa"/><circle cx="0" cy="-21" r="3" class="fa"/><circle cx="5" cy="-19" r="3" class="fa"/></g>
+ <g class="ftag" style="animation-delay:${k * 0.8}s"><rect x="${x - 44}" y="${y - 58}" width="88" height="26" rx="13" class="fs sl" stroke-width="1.5"/><text x="${x}" y="${y - 40}" text-anchor="middle" class="fi" style="font-size:13px">${l}</text></g>`,
+ ).join("")}
+ <g class="mag"><circle r="24" class="fas si" stroke-width="4" fill-opacity=".6"/><path d="M17 17 L36 36" class="si" stroke-width="7" stroke-linecap="round"/></g>
+ <g class="pcard"><rect x="440" y="18" width="150" height="204" rx="12" class="fs sf" stroke-width="2"/>
+  <text x="454" y="46" class="ff" style="font-size:14px">A stranger knows:</text>
+  ${["pet's name", "school", "birthday", "street", "empty house"].map((t, k) => `<text x="454" y="${78 + k * 30}" class="fi" style="font-size:14px">✓ ${t}</text>`).join("")}
+ </g>
+ <text x="20" y="28" class="fm mono" style="font-size:13px;letter-spacing:.1em">EVERY POST = A FOOTPRINT</text>
+</svg>`,
+          "Every post leaves a footprint. One alone says little, but together they tell a stranger a lot about you.",
+        );
+
+      const pkt = (d) =>
+        `<g class="pkt" style="animation-delay:${d}s"><g class="plain"><rect x="-46" y="-13" width="92" height="26" rx="6" class="ffs sf" stroke-width="1.5"/><text y="5" text-anchor="middle" class="ff mono" style="font-size:14px">pass: 1234</text></g><g class="enc"><rect x="-46" y="-13" width="92" height="26" rx="6" class="fa"/><text y="5" text-anchor="middle" class="fs mono" style="font-size:14px">#x9@Qa!</text></g></g>`;
+      const S6 = () =>
+        scene(
+          `<svg viewBox="0 0 600 240" role="img" aria-label="Data travels from a phone through public Wi-Fi to the internet; without VPN a stranger reads it, with VPN it is encrypted">
+ <rect x="54" y="98" width="494" height="44" rx="22" class="fas enc" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>
+ <text x="300" y="92" text-anchor="middle" class="fa enc mono" style="font-size:13px;letter-spacing:.1em">VPN TUNNEL</text>
+ <rect x="40" y="80" width="46" height="80" rx="8" class="fs si"/><rect x="46" y="90" width="34" height="56" rx="3" class="fas"/>
+ <text x="63" y="182" text-anchor="middle" class="fi" style="font-size:14px">you</text>
+ <path d="M272 106 L264 80 M328 106 L336 80" class="si" stroke-width="3" stroke-linecap="round"/>
+ <path d="M284 74 q16 -14 32 0 M290 82 q10 -8 20 0" class="fn sa" stroke-width="3" stroke-linecap="round"/>
+ <rect x="255" y="106" width="90" height="30" rx="6" class="fs si"/>
+ <circle cx="272" cy="121" r="3" class="fg"/><circle cx="284" cy="121" r="3" class="fg"/>
+ <text x="300" y="158" text-anchor="middle" class="fi" style="font-size:14px">public Wi-Fi</text>
+ <path d="M478 142 a22 22 0 0 1 4 -44 a30 30 0 0 1 56 6 a20 20 0 0 1 4 38 Z" class="fs si"/>
+ <text x="512" y="130" text-anchor="middle" class="fi" style="font-size:14px">Internet</text>
+ <path d="M338 138 L400 190" class="fn sl" stroke-width="2.5" stroke-dasharray="5 5"/>
+ <circle cx="412" cy="196" r="12" class="fm"/><path d="M392 236 q20 -34 40 0 Z" class="fm"/>
+ <rect x="438" y="186" width="156" height="42" rx="10" class="fs sl" stroke-width="1.5"/>
+ <text x="448" y="204" class="fi plain" style="font-size:13px">I can read it:</text><text x="448" y="220" class="ff plain mono" style="font-size:13px">pass: 1234 😈</text>
+ <text x="448" y="204" class="fi enc" style="font-size:13px">I can't read it:</text><text x="448" y="220" class="fa enc mono" style="font-size:13px">#x9@Qa! ???</text>
+ ${pkt(0)}${pkt(1.5)}${pkt(3)}
+</svg>`,
+          "On public Wi-Fi, a stranger on the same network can read what you send. A VPN encrypts it inside a tunnel.",
+          `<button class="sm" type="button" id="vpn-btn">Turn VPN on</button>`,
+          "wifi-scene",
+        );
+      const SCENES = [S1, S2, S3, S4, S5, S6];
+
+      // brute-force animation (JS driven)
+      let bfTimer = null;
+      function startBF() {
+        clearInterval(bfTimer);
+        const A = "messi10",
+          B = "Taco-Cloud-Violin-7",
+          CS =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-#!@";
+        const r = () => CS[Math.floor(Math.random() * CS.length)];
+        const fig = document.getElementById("bf-scene");
+        const rowA = document.getElementById("bfa"),
+          rowB = document.getElementById("bfb");
+        rowA.innerHTML =
+          A.split("")
+            .map(() => `<span class="ch"></span>`)
+            .join("") + `<span data-lock></span>`;
+        rowB.innerHTML =
+          B.split("")
+            .map(() => `<span class="ch"></span>`)
+            .join("") + `<span data-lock></span>`;
+        rowB.querySelector("[data-lock]").innerHTML = lockSvg(false);
+        const ca = [...rowA.querySelectorAll(".ch")],
+          cb = [...rowB.querySelectorAll(".ch")];
+        let t = 0,
+          g = 0;
+        const tick = () => {
+          if (!document.body.contains(fig)) {
+            clearInterval(bfTimer);
+            return;
+          }
+          if (fig.classList.contains("paused")) return;
+          const c = t % 80;
+          const fixed = Math.min(A.length, Math.floor(c / 3));
+          ca.forEach((el, k) => {
+            if (k < fixed) {
+              el.textContent = A[k];
+              el.classList.add("fix");
+            } else {
+              el.textContent = r();
+              el.classList.remove("fix");
+            }
+          });
+          const cracked = fixed === A.length;
+          rowA.querySelector("[data-lock]").innerHTML = lockSvg(cracked);
+          const sa = document.getElementById("bfa-st");
+          sa.className = "st " + (cracked ? "bad" : "");
+          sa.textContent = cracked
+            ? "CRACKED in 0.0002 seconds"
+            : `${(c * 48213 + 1).toLocaleString("en")} guesses…`;
+          cb.forEach((el) => (el.textContent = r()));
+          g += Math.floor(3e8 + Math.random() * 2e8);
+          const sb = document.getElementById("bfb-st");
+          sb.className = "st good";
+          sb.textContent = `${g.toLocaleString("en")} guesses · still safe`;
+          t++;
+        };
+        tick();
+        bfTimer = setInterval(tick, RM ? 400 : 70);
+      }
+
+      const L = [
+        {
+          t: "What is cybersecurity?",
+          short: "Introduction",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 1 · Introduction</span><h1>What is cybersecurity?</h1>
+ <p class="lead">Every day you use your phone to study, chat, play and watch videos. Criminals know this too. Cybersecurity is how we protect ourselves.</p></div>
+ <div class="prose">
+  <p>${v("Cybersecurity", "ciberseguridad")} is the practice of protecting computers, phones, ${v("networks", "redes")} and ${v("personal information", "datos personales")} from attacks. An attack can come from a ${v("hacker", "pirata informático")}, a fake message or a dangerous app.</p>
+  <p>Attackers usually want three things: your <b>accounts</b> (Instagram, email, games), your <b>money</b> and your <b>data</b>. The good news: most attacks fail if you have a few good habits. You don't need to be an expert to be safe.</p>
+ </div>
+ <div class="box"><h2>The three things we protect</h2>
+  <div class="grid g3">
+   <div class="mini"><span class="lbl">Confidentiality</span><h3>Keep it secret</h3><p>Only the right people can see your information. Example: nobody can read your private messages.</p></div>
+   <div class="mini"><span class="lbl">Integrity</span><h3>Keep it correct</h3><p>Nobody can change your information without permission. Example: nobody can change your grades.</p></div>
+   <div class="mini"><span class="lbl">Availability</span><h3>Keep it working</h3><p>You can use your information when you need it. Example: your files are not locked by a virus.</p></div>
+  </div>
+  <p class="note">Experts call this the <b>CIA triad</b>. Here CIA means Confidentiality, Integrity and Availability.</p>
+ </div>
+ ${words([
+   ["attack", "ataque"],
+   ["threat", "amenaza"],
+   ["data", "datos"],
+   ["account", "cuenta"],
+   ["device", "dispositivo"],
+ ])}
+ ${quiz("q1", "A virus locks all the photos on your phone and you can't open them. What is affected?", ["Confidentiality", "Availability", "Integrity"], 1, "Availability means you can use your information when you need it. Locked files are not available.")}
+`,
+        },
+        {
+          t: "Strong passwords",
+          short: "Passwords",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 2 · Passwords</span><h1>Strong passwords</h1>
+ <p class="lead">Your ${v("password", "contraseña")} is the key to your digital life. A weak one is like leaving your house open.</p></div>
+ <div class="prose">
+  <p>Attackers use programs that try millions of passwords per second. Short passwords and common words like <code>123456</code>, <code>password</code> or your pet's name are ${v("cracked", "descifradas")} in seconds.</p>
+  <p>A ${v("strong password", "contraseña segura")} is <b>long</b> (12 characters or more) and <b>unique</b> (you use it for only one account). A great trick is a ${v("passphrase", "frase de contraseña")}: four random words together, like <code>Purple-Mate-Rocket-47</code>. It's long, easy to remember and hard to crack.</p>
+  <p>Also turn on ${v("two-factor authentication (2FA)", "verificación en dos pasos")}. With 2FA, you use your password and a second way to prove it is you, such as a code or an app. If someone steals your password, they still need that second proof to ${v("log in", "iniciar sesión")}.</p>
+ </div>
+ <div class="box activity"><span class="eyebrow">Try it</span><h2>Password strength tester</h2>
+  <p class="note">Type an example password (don't use your real one). Nothing is saved or sent.</p>
+  <input class="pw" id="pw" type="text" autocomplete="off" spellcheck="false" value="messi10" aria-label="Test password">
+  <div class="meter" id="meter"><i></i><i></i><i></i><i></i></div>
+  <p class="verdict" id="verdict"></p>
+  <ul class="checks" id="checks"></ul>
+ </div>
+ ${words([
+   ["weak", "débil"],
+   ["strong", "fuerte, segura"],
+   ["unique", "único"],
+   ["guess", "adivinar"],
+   ["2FA", "verificación en dos pasos"],
+ ])}
+ ${quiz("q2", "Which password is the strongest?", ["Juan2009", "qwerty123", "Taco-Cloud-Violin-Seven", "P@ss"], 2, "The passphrase is long and uses random words. Length is the most important thing.")}
+`,
+        },
+        {
+          t: "Phishing",
+          short: "Phishing",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 3 · Phishing</span><h1>Don't take the bait</h1>
+ <p class="lead">${v("Phishing", "phishing, suplantación")} sounds like <i>fishing</i> because the attacker throws a hook and waits for you to bite.</p></div>
+ <div class="prose">
+  <p>A phishing message pretends to come from someone you trust: your bank, a streaming service, a game or even your school. It tries to make you ${v("click a link", "hacer clic en un enlace")}, open an ${v("attachment", "archivo adjunto")} or type your password on a ${v("fake website", "sitio web falso")}.</p>
+  <p>Phishing works because it plays with emotions: <b>fear</b> ("your account will be blocked"), <b>urgency</b> ("only 24 hours") or <b>greed</b> ("you won a prize"). When a message makes you feel a strong emotion, stop and think.</p>
+  <p>Phishing by text message is called ${v("smishing", "smishing (por SMS)")}. By phone call, it's ${v("vishing", "vishing (por llamada)")}.</p>
+ </div>
+ <div class="box activity"><span class="eyebrow">Activity</span><h2>Find the 6 red flags</h2>
+  <p class="note">Tap the parts of this email that look suspicious. The company is invented.</p>
+  <div class="chipbar"><span class="pill" id="flag-n">0 / 6 found</span><button class="sm" id="flag-all">Show all</button></div>
+  <div class="mail">
+   <div class="mail-h">
+    <span><b>From:</b> <button class="flag from" data-f="0">StreamBox Support &lt;security@streambox-acount-verify.xyz&gt;</button></span>
+    <span><b>Subject:</b> <button class="flag" data-f="1">URGENT!!! Your account will be deleted</button></span>
+   </div>
+   <div class="mail-b">
+    <p><button class="flag" data-f="2">Dear Customer,</button></p>
+    <p>We detected a problem with your payment. <button class="flag" data-f="3">If you do not verify your account in 24 hours, it will be permanently deleted.</button></p>
+    <p><button class="flag" data-f="4">Please confirm your password and card number</button> using the button below.</p>
+    <p><button class="flag fakebtn" data-f="5">Verify my account</button></p>
+    <p>Thank you,<br>StreamBox Team</p>
+   </div>
+  </div>
+  <ol class="found-list" id="found-list"></ol>
+ </div>
+ <div class="box activity"><span class="eyebrow">Activity</span><h2>Scam or safe?</h2>
+  <p class="note">Read each text message and decide.</p>
+  <div id="sms-area"></div>
+ </div>
+ ${words([
+   ["bait", "carnada"],
+   ["red flag", "señal de alerta"],
+   ["sender", "remitente"],
+   ["suspicious", "sospechoso"],
+   ["urgent", "urgente"],
+ ])}
+`,
+        },
+        {
+          t: "Malware",
+          short: "Malware",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 4 · Malware</span><h1>Meet the malware family</h1>
+ <p class="lead">${v("Malware", "software malicioso")} = <b>mal</b>icious + soft<b>ware</b>. It is software made to harm a device, spy on someone, steal information, or control a device without permission.</p></div>
+ <div class="prose">
+  <p>Malware usually enters when you ${v("download", "descargar")} pirated games or apps, open strange attachments, plug in an unknown USB drive or click a phishing link. Once inside, each type does something different.</p>
+ </div>
+ <div class="box"><div class="tw"><table>
+  <thead><tr><th>Type</th><th>What it does</th><th>Spanish</th></tr></thead>
+  <tbody>
+   <tr><td><b>Virus</b></td><td>Attaches itself to a file or program. It can spread when someone opens or shares that file.</td><td>virus</td></tr>
+   <tr><td><b>Trojan horse</b></td><td>Pretends to be a useful or safe program, but is harmful.</td><td>troyano</td></tr>
+   <tr><td><b>Ransomware</b></td><td>Locks your files and asks for money (a <i>ransom</i>) to unlock them.</td><td>secuestro de datos</td></tr>
+   <tr><td><b>Spyware</b></td><td>Secretly watches what you do and sends it to someone else.</td><td>software espía</td></tr>
+   <tr><td><b>Keylogger</b></td><td>Records everything you type, including passwords.</td><td>registrador de teclas</td></tr>
+   <tr><td><b>Adware</b></td><td>Fills your screen with unwanted ads.</td><td>software publicitario</td></tr>
+  </tbody></table></div></div>
+ <div class="box"><h2>How to protect your device</h2>
+  <div class="grid">
+   <div class="mini"><h3>Update</h3><p>Install ${v("updates", "actualizaciones")}. They close the holes malware uses to enter.</p></div>
+   <div class="mini"><h3>Use official stores</h3><p>Download apps only from Google Play, the App Store or the official website.</p></div>
+   <div class="mini"><h3>Antivirus</h3><p>Keep an ${v("antivirus", "antivirus")} active. It finds and removes malware.</p></div>
+   <div class="mini"><h3>Backup</h3><p>Make a ${v("backup", "copia de seguridad")}. If ransomware locks your files, you still have a copy.</p></div>
+  </div>
+ </div>
+ <div class="row"><span class="note">There are many more types, like worms, rootkits and zombies.</span><button class="btn" type="button" data-go="glossary">See all 47 threats in the Threatsaurus A–Z →</button></div>
+ ${quiz("q4", 'You download a "free" version of a paid game from a strange website. Later, your passwords are stolen. What was the game probably?', ["A firewall", "A Trojan horse", "An update", "A backup"], 1, "A Trojan horse looks useful or fun but hides malware inside.")}
+`,
+        },
+        {
+          t: "Privacy and social media",
+          short: "Privacy",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 5 · Privacy</span><h1>Think before you post</h1>
+ <p class="lead">What you post online can stay there forever. This is your ${v("digital footprint", "huella digital")}.</p></div>
+ <div class="prose">
+  <p>${v("Privacy", "privacidad")} is your right to decide who sees your information. Criminals can use small details from your posts to guess your passwords, find where you live or pretend to be you. This is called ${v("identity theft", "robo de identidad")}.</p>
+  <p>Check your ${v("privacy settings", "configuración de privacidad")}: make your account private, accept only people you know and turn off location on your photos. And remember: ${v("cyberbullying", "ciberacoso")} is never OK. If you see it, don't share it: ${v("report", "denunciar")} it and tell an adult you trust.</p>
+ </div>
+ <div class="box activity"><span class="eyebrow">Activity</span><h2>Would you post this?</h2>
+  <p class="note">Choose OK or Not OK for each post.</p>
+  <div class="posts" id="posts"></div>
+  <p class="fb" id="post-fb"></p>
+ </div>
+ ${words([
+   ["post", "publicar, publicación"],
+   ["share", "compartir"],
+   ["follower", "seguidor"],
+   ["location", "ubicación"],
+   ["stranger", "desconocido"],
+ ])}
+`,
+        },
+        {
+          t: "Wi-Fi and everyday habits",
+          short: "Everyday habits",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 6 · Everyday habits</span><h1>Safe habits every day</h1>
+ <p class="lead">Cybersecurity is not a program you install once. It's a set of small habits.</p></div>
+ <div class="prose">
+  <p>${v("Public Wi-Fi", "wifi público")} in cafés, airports or shopping centers is useful, but other people on the same network can sometimes see what you send. Don't use your bank app or type important passwords there. If you must, use a ${v("VPN", "red privada virtual")}, which ${v("encrypts", "cifra")} your connection.</p>
+  <p>On shared computers, like the ones at school, always ${v("log out", "cerrar sesión")} when you finish, and never click "remember my password". Lock your phone with a PIN or fingerprint so nobody can use it if you lose it.</p>
+ </div>
+ <div class="box"><h2>Your checklist</h2><div class="posts" id="habits"></div><p class="note" id="habit-n"></p></div>
+ ${quiz("q6", "You're at a café and want to check your bank account. What's the safest choice?", ["Use the café's free Wi-Fi", "Use your phone's mobile data", "Ask a stranger to share their hotspot"], 1, "Mobile data is safer than public Wi-Fi because other people can't join your connection.")}
+`,
+        },
+        {
+          t: "A short history of malware",
+          short: "Malware history",
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Lesson 7 · History</span><h1>A short history of malware</h1>
+ <p class="lead">The first computer ${v("viruses", "virus")} were experiments and jokes. Today, malware is a business. Travel through time and see how it changed.</p></div>
+ <figure class="scene tl${RM ? " paused" : ""}" id="tl">
+  <div class="tl-top"><div class="tl-year" id="tl-year" aria-live="polite">1949</div><span class="tl-era" id="tl-era"></span></div>
+  <div class="tl-scroll"><div class="tl-track" id="tl-track"></div></div>
+  <div id="tl-card-wrap"></div>
+  <figcaption><span>Based on the “Malware timeline” in the Sophos Threatsaurus (pp. 92–98).</span>
+   <button class="sm" type="button" id="tl-prev">← Before</button><button class="sm playbtn" type="button">${RM ? "Play" : "Pause"}</button><button class="sm" type="button" id="tl-next">After →</button></figcaption>
+ </figure>
+ <div class="box"><h2>Three eras of malware</h2>
+  <div class="grid g3">
+   <div class="mini" style="border-color:var(--accent)"><span class="lbl">1949 – 1981</span><h3>Experiments</h3><p>Scientists and students test programs that can ${v("copy themselves", "copiarse a sí mismos")}. Nobody wants to cause damage.</p></div>
+   <div class="mini" style="border-color:var(--warn)"><span class="lbl">1982 – 1999</span><h3>Pranks and vandalism</h3><p>Viruses travel on floppy disks and by email. They show messages, crash computers or ${v("erase", "borrar")} files.</p></div>
+   <div class="mini" style="border-color:var(--flag)"><span class="lbl">2000 – 2013</span><h3>Crime for money</h3><p>Criminals use ${v("zombies", "zombis")}, phishing and ransomware to steal money and data. Malware tries to stay hidden.</p></div>
+  </div>
+  <p class="note">The Threatsaurus was published in 2013, so the timeline ends there.</p>
+ </div>
+ ${words([
+   ["floppy disk", "disquete"],
+   ["spread", "propagarse"],
+   ["crash", "colgarse, fallar"],
+   ["ransom", "rescate"],
+   ["worldwide", "en todo el mundo"],
+ ])}
+ ${quiz("q7", "Which was the first malware that asked for money to unlock a computer?", ["Brain (1986)", "The AIDS Trojan (1989)", "Melissa (1999)", "Creeper (1971)"], 1, "In 1989 the AIDS Trojan encrypted the hard disk and asked for a payment. It was the first ransomware.")}
+`,
+        },
+        {
+          t: "Certificate",
+          short: "Certificate",
+          cert: true,
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Final step</span><h1>You're cyber safe!</h1>
+ <p class="lead">Write your name to get your certificate.</p></div>
+ <div class="row"><input id="cname" placeholder="Your name" aria-label="Your name" maxlength="40"></div>
+ <div class="cert" id="cert">
+  <span class="eyebrow">Certificate of completion</span>
+  <p class="big">Cyber Basics</p>
+  <p class="note">This certifies that</p>
+  <div class="name" id="cert-name">Your name</div>
+  <p class="note">completed the seven lessons of the Cyber Basics course and knows how to stay safe online.</p>
+  <ul><li>✓ Strong passwords</li><li>✓ Phishing</li><li>✓ Malware</li><li>✓ Privacy</li><li>✓ Safe habits</li><li>✓ Malware history</li></ul>
+  <p class="note" id="cert-score"></p>
+ </div>
+ <div class="box"><h2>Golden rules to remember</h2><ol class="found-list" style="font-size:16px">
+  <li>Use long, unique passwords and turn on 2FA.</li>
+  <li>Stop and think before you click a link.</li>
+  <li>Update your apps and devices.</li>
+  <li>Download only from official stores.</li>
+  <li>Make backups of important files.</li>
+  <li>Protect your personal information and privacy settings.</li>
+  <li>Avoid important accounts on public Wi-Fi.</li>
+  <li>If something is strange, ask for help.</li>
+ </ol></div>
+ <div class="row"><button class="btn" type="button" data-go="glossary">Open the Threatsaurus A–Z glossary →</button></div>
+`,
+        },
+        {
+          t: "Threatsaurus A–Z",
+          short: "Threatsaurus A–Z",
+          ref: true,
+          html: () => `
+ <div class="lesson-head"><span class="eyebrow">Reference · Sophos Threatsaurus</span><h1>Threatsaurus A–Z</h1>
+ <p class="lead">All the threats and security tools from the Threatsaurus, explained in simple English with the Spanish translation. The page numbers show where to find each word in the PDF.</p></div>
+ <div class="gbar">
+  <input id="gq" type="search" placeholder="Search in English or Spanish…" aria-label="Search the glossary">
+  <button class="chip2" type="button" data-k="all" aria-pressed="true">All</button>
+  <button class="chip2" type="button" data-k="t" aria-pressed="false">Threats</button>
+  <button class="chip2" type="button" data-k="d" aria-pressed="false">Security tools</button>
+ </div>
+ <div class="letters" id="gl"></div>
+ <span class="note" id="gcount"></span>
+ <div class="glist" id="glist"></div>
+`,
+        },
+      ];
+
+      let cur = 0;
+      const done = new Set();
+      let points = 0;
+      const scored = new Set();
+      const $ = (id) => document.getElementById(id);
+      const LESSONS = L.filter((l) => !l.cert && !l.ref).length; // 7
+      const LAST = L.findIndex((l) => l.cert) - 1,
+        CERT = L.findIndex((l) => l.cert),
+        GLOSS = L.findIndex((l) => l.ref);
+      function renderRail() {
+        $("lessons").innerHTML = L.map(
+          (l, i) =>
+            `${l.ref ? `<li class="sep">Reference</li>` : ""}<li><button data-i="${i}" class="${done.has(i) ? "done" : ""}" ${i === cur ? 'aria-current="step"' : ""}><span class="n">${l.cert ? "★" : l.ref ? "Az" : i + 1}</span>${l.short}</button></li>`,
+        ).join("");
+        const n = [...done].filter((i) => !L[i].cert && !L[i].ref).length;
+        $("prog").style.width = (n / LESSONS) * 100 + "%";
+        $("prog-t").textContent = `${n} of ${LESSONS} lessons completed`;
+      }
+      function go(i, opts = {}) {
+        cur = i;
+        const l = L[i];
+        const nextBtn =
+          l.cert || l.ref
+            ? ""
+            : `<button class="btn primary" id="next">${i === LAST ? "Finish course →" : "Next lesson →"}</button>`;
+        $("panel").innerHTML =
+          l.html() +
+          `<div class="nav"><button class="btn" id="back" ${i === 0 ? "disabled" : ""}>← Back</button>${nextBtn}</div>`;
+        $("back").onclick = () => go(cur - 1);
+        if ($("next"))
+          $("next").onclick = () => {
+            done.add(cur);
+            if (cur === LAST) done.add(CERT);
+            go(cur + 1);
+          };
+        clearInterval(bfTimer);
+        clearInterval(tlTimer);
+        if (i === LAST) bindTimeline();
+        if (l.ref) bindGlossary(opts.q || "");
+        if (SCENES[i])
+          $("panel")
+            .querySelector(".lesson-head")
+            .insertAdjacentHTML("afterend", SCENES[i]());
+        $("panel")
+          .querySelectorAll(".playbtn")
+          .forEach(
+            (b) =>
+              (b.onclick = () => {
+                const f = b.closest(".scene");
+                f.classList.toggle("paused");
+                b.textContent = f.classList.contains("paused")
+                  ? "Play"
+                  : "Pause";
+              }),
+          );
+        if (i === 1) startBF();
+        if ($("vpn-btn"))
+          $("vpn-btn").onclick = () => {
+            const f = $("wifi-scene");
+            f.classList.toggle("vpn");
+            $("vpn-btn").textContent = f.classList.contains("vpn")
+              ? "Turn VPN off"
+              : "Turn VPN on";
+          };
+        if (l.cert) confetti();
+        bindQuiz();
+        if (i === 1) bindPw();
+        if (i === 2) {
+          bindFlags();
+          bindSms();
+        }
+        if (i === 4) bindPosts();
+        if (i === 5) bindHabits();
+        if (l.cert) bindCert();
+        renderRail();
+        if (window.innerWidth < 820)
+          $("panel").scrollIntoView({ block: "start" });
+        else window.scrollTo({ top: 0 });
+      }
+      $("lessons").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b) go(+b.dataset.i);
+      });
+      $("panel").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-go]");
+        if (b) go(GLOSS, { q: b.dataset.q || "" });
+      });
+      $("es-t").onchange = (e) =>
+        document.body.classList.toggle("es", e.target.checked);
+
+      function bindQuiz() {
+        document.querySelectorAll("[data-quiz]").forEach((box) => {
+          const fb = box.querySelector(".fb");
+          box.querySelectorAll(".opt").forEach(
+            (b) =>
+              (b.onclick = () => {
+                if (box.dataset.answered) return;
+                box.dataset.answered = 1;
+                const ok = b.dataset.i === b.dataset.r;
+                box.querySelectorAll(".opt").forEach((x) => {
+                  if (x.dataset.i === x.dataset.r) x.classList.add("right");
+                });
+                if (!ok) b.classList.add("wrong");
+                if (ok && !scored.has(box.dataset.quiz)) {
+                  points++;
+                  scored.add(box.dataset.quiz);
+                }
+                fb.className = "fb " + (ok ? "good" : "bad");
+                fb.textContent =
+                  (ok ? "Correct! " : "Not quite. ") + fb.dataset.exp;
+              }),
+          );
+        });
+      }
+      // passwords
+      const COMMON = [
+        "123456",
+        "password",
+        "qwerty",
+        "12345678",
+        "111111",
+        "abc123",
+        "123456789",
+        "iloveyou",
+        "admin",
+        "messi10",
+        "boca",
+        "river",
+        "contraseña",
+        "hola123",
+      ];
+      function bindPw() {
+        const upd = () => {
+          const p = $("pw").value;
+          const c = [
+            [p.length >= 12, "At least 12 characters"],
+            [
+              /[a-z]/.test(p) && /[A-Z]/.test(p),
+              "Uppercase and lowercase letters",
+            ],
+            [/\d/.test(p), "Numbers"],
+            [/[^A-Za-z0-9]/.test(p), "Symbols (like - ! # @)"],
+            [
+              p.length > 0 && !COMMON.some((w) => p.toLowerCase().includes(w)),
+              "No common words or names",
+            ],
+          ];
+          let pool = 0;
+          if (/[a-z]/.test(p)) pool += 26;
+          if (/[A-Z]/.test(p)) pool += 26;
+          if (/\d/.test(p)) pool += 10;
+          if (/[^A-Za-z0-9]/.test(p)) pool += 33;
+          let bits = p.length * Math.log2(pool || 1);
+          if (!c[4][0]) bits = Math.min(bits, 10);
+          const secs = Math.pow(2, bits) / 1e10;
+          const t =
+            secs < 1
+              ? "less than a second"
+              : secs < 3600
+                ? Math.round(secs / 60) + " minutes"
+                : secs < 86400 * 365
+                  ? Math.round(secs / 86400) + " days"
+                  : secs < 3.15e7 * 1e6
+                    ? Math.round(secs / 3.15e7).toLocaleString("en") + " years"
+                    : "millions of years";
+          const lvl = !p
+            ? 0
+            : bits < 28
+              ? 1
+              : bits < 45
+                ? 2
+                : bits < 65
+                  ? 3
+                  : 4;
+          const cols = [
+            "var(--line)",
+            "var(--flag)",
+            "var(--warn)",
+            "var(--accent)",
+            "var(--good)",
+          ];
+          const names = [
+            "Type a password",
+            "Very weak",
+            "Weak",
+            "Good",
+            "Strong",
+          ];
+          $("meter")
+            .querySelectorAll("i")
+            .forEach(
+              (m, k) =>
+                (m.style.background = k < lvl ? cols[lvl] : "var(--line)"),
+            );
+          $("verdict").style.color = cols[lvl];
+          $("verdict").textContent = p
+            ? `${names[lvl]}. A computer could crack it in about ${t}.`
+            : names[0];
+          $("checks").innerHTML = c
+            .map(([ok, t]) => `<li class="${ok ? "ok" : ""}">${t}</li>`)
+            .join("");
+        };
+        $("pw").oninput = upd;
+        upd();
+      }
+      // phishing flags
+      const FLAGS = [
+        [
+          "Strange sender address",
+          "The real company would use its own domain. This one has a spelling mistake (acount) and ends in .xyz.",
+        ],
+        [
+          "Urgent, scary subject",
+          "Capital letters and !!! try to make you panic so you don't think.",
+        ],
+        [
+          "Generic greeting",
+          '"Dear Customer" means they don\'t know your name. Real companies usually use it.',
+        ],
+        [
+          "Pressure and threats",
+          '"24 hours" and "permanently deleted" are pressure tricks.',
+        ],
+        [
+          "Asks for your password and card",
+          'A real company never asks for your password by email. Also: "you\'re" should be "your". Spelling errors are a red flag.',
+        ],
+        [
+          "Suspicious button",
+          "The button takes you to a fake website. Never click. Go to the real app or website yourself.",
+        ],
+      ];
+      function bindFlags() {
+        const found = new Set();
+        const draw = () => {
+          $("flag-n").textContent = `${found.size} / 6 found`;
+          $("found-list").innerHTML =
+            [...found]
+              .sort()
+              .map((k) => `<li><b>${FLAGS[k][0]}:</b> ${FLAGS[k][1]}</li>`)
+              .join("") +
+            (found.size === 6
+              ? `<li style="list-style:none;margin-left:-1.2em;color:var(--good);font-weight:700">Great job! You found all the red flags.</li>`
+              : "");
+        };
+        document.querySelectorAll(".flag").forEach(
+          (f) =>
+            (f.onclick = () => {
+              found.add(+f.dataset.f);
+              f.classList.add("found");
+              draw();
+            }),
+        );
+        $("flag-all").onclick = () => {
+          document.querySelectorAll(".flag").forEach((f) => {
+            found.add(+f.dataset.f);
+            f.classList.add("found");
+          });
+          draw();
+        };
+        draw();
+      }
+      const SMS = [
+        [
+          "+54 9 11 5555-0192",
+          "Congratulations!! You won an iPhone 17. Claim your prize now: bit.ly/fr33-ph0ne",
+          true,
+          "Prizes you never entered are a classic scam. The link is shortened to hide where it goes.",
+        ],
+        [
+          "Mom",
+          "Can you buy bread on your way home? 🍞",
+          false,
+          "A normal message from a known contact that doesn't ask for anything strange.",
+        ],
+        [
+          "Unknown number",
+          "Hi, it's me, I changed my number. I need you to send me money urgently, I'll explain later.",
+          true,
+          'Scammers pretend to be friends or family with a "new number". Call the person on their old number to check.',
+        ],
+        [
+          "Your school",
+          "Reminder: the parents' meeting is on Friday at 6 pm in the main hall.",
+          false,
+          "Information only. No links, no requests for money or passwords.",
+        ],
+        [
+          "Delivery Service",
+          "Your package is on hold. Pay a $2 fee to receive it: deliv-ery-track.info",
+          true,
+          "Fake delivery messages ask for small payments to steal your card details.",
+        ],
+      ];
+      function bindSms() {
+        let i = 0,
+          score = 0;
+        const draw = () => {
+          if (i >= SMS.length) {
+            $("sms-area").innerHTML =
+              `<p class="fb ${score >= 4 ? "good" : ""}">You got ${score} of ${SMS.length} right. ${score === 5 ? "You're a scam detector!" : "Review the red flags and try again."}</p><button class="btn" id="sms-r">Try again</button>`;
+            $("sms-r").onclick = () => {
+              i = 0;
+              score = 0;
+              draw();
+            };
+            return;
+          }
+          const [from, msg] = SMS[i];
+          $("sms-area").innerHTML =
+            `<span class="pill">Message ${i + 1} of ${SMS.length}</span><div class="sms" style="margin-block:10px"><small>${from}</small>${msg}</div><div class="two"><button class="btn" data-a="1" style="border-color:var(--flag);color:var(--flag)">Scam</button><button class="btn" data-a="0" style="border-color:var(--good);color:var(--good)">Safe</button></div><p class="fb" id="sms-fb" style="margin-top:10px"></p>`;
+          $("sms-area")
+            .querySelectorAll("[data-a]")
+            .forEach(
+              (b) =>
+                (b.onclick = () => {
+                  if ($("sms-fb").textContent) return;
+                  const ok = (b.dataset.a === "1") === SMS[i][2];
+                  if (ok) score++;
+                  $("sms-fb").className = "fb " + (ok ? "good" : "bad");
+                  $("sms-fb").textContent =
+                    (ok ? "Correct! " : "Not quite. ") + SMS[i][3];
+                  const n = document.createElement("button");
+                  n.className = "btn primary";
+                  n.style.marginTop = "8px";
+                  n.textContent =
+                    i < SMS.length - 1 ? "Next message →" : "See result";
+                  n.onclick = () => {
+                    i++;
+                    draw();
+                  };
+                  $("sms-area").appendChild(n);
+                }),
+            );
+        };
+        draw();
+      }
+      const POSTS = [
+        [
+          "A photo of your new puppy 🐶",
+          true,
+          "OK! A pet photo is fine. Just don't use your pet's name as a password.",
+        ],
+        [
+          "A photo of your ID card (DNI) to show your new picture",
+          false,
+          "Not OK. Your ID number can be used for identity theft.",
+        ],
+        [
+          '"On vacation in Brazil for 2 weeks!" posted while you\'re away',
+          false,
+          "Not OK. It tells everyone your house is empty. Post the photos when you come back.",
+        ],
+        [
+          "A selfie in your school uniform with the school name and your street",
+          false,
+          "Not OK. It shows where you study and live. Strangers can find you.",
+        ],
+        [
+          "A drawing you made in art class",
+          true,
+          "OK! Sharing your art is great.",
+        ],
+        [
+          "Your phone number in your public bio",
+          false,
+          "Not OK. Anyone, including scammers, can contact you.",
+        ],
+      ];
+      function bindPosts() {
+        const ans = {};
+        const draw = () => {
+          $("posts").innerHTML = POSTS.map(
+            ([t, ok, why], k) =>
+              `<div class="post"><p>${t}</p><div class="act">${k in ans ? `<span class="tagline ${ans[k] === ok ? "good" : "bad"}">${ans[k] === ok ? "Correct" : "Wrong"}</span>` : `<button class="sm" data-k="${k}" data-v="1">OK</button><button class="sm" data-k="${k}" data-v="0">Not OK</button>`}</div>${k in ans ? `<p class="why">${why}</p>` : ""}</div>`,
+          ).join("");
+          const n = Object.keys(ans).length,
+            r = Object.entries(ans).filter(
+              ([k, a]) => POSTS[k][1] === a,
+            ).length;
+          $("post-fb").className = "fb " + (n === POSTS.length ? "good" : "");
+          $("post-fb").textContent =
+            n === POSTS.length ? `You got ${r} of ${POSTS.length} right.` : "";
+          $("posts")
+            .querySelectorAll("[data-k]")
+            .forEach(
+              (b) =>
+                (b.onclick = () => {
+                  ans[b.dataset.k] = b.dataset.v === "1";
+                  draw();
+                }),
+            );
+        };
+        draw();
+      }
+      const HAB = [
+        "I use a different password for each account",
+        "I have 2FA on my email and social media",
+        "My phone has a PIN, pattern or fingerprint",
+        "I install updates when they appear",
+        "I only download apps from official stores",
+        "I log out on shared computers",
+        "My social media accounts are private",
+        "I have a backup of my important files",
+      ];
+      const habits = new Set();
+      function bindHabits() {
+        const draw = () => {
+          $("habits").innerHTML = HAB.map(
+            (h, k) =>
+              `<label class="post" style="cursor:pointer"><p>${h}</p><input type="checkbox" data-h="${k}" ${habits.has(k) ? "checked" : ""} style="width:20px;height:20px;accent-color:var(--accent)"></label>`,
+          ).join("");
+          const n = habits.size;
+          $("habit-n").textContent =
+            `You have ${n} of ${HAB.length} safe habits. ` +
+            (n === 8
+              ? "Excellent!"
+              : n >= 5
+                ? "Good! Choose one more habit to start this week."
+                : "Pick two habits from the list and start today.");
+          $("habits")
+            .querySelectorAll("input")
+            .forEach(
+              (c) =>
+                (c.onchange = () => {
+                  c.checked
+                    ? habits.add(+c.dataset.h)
+                    : habits.delete(+c.dataset.h);
+                  draw();
+                }),
+            );
+        };
+        draw();
+      }
+      function bindCert() {
+        const set = () => {
+          $("cert-name").textContent = $("cname").value.trim() || "Your name";
+        };
+        $("cname").oninput = set;
+        set();
+        $("cert-score").textContent =
+          `Quick checks answered correctly: ${points} of 5 · ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`;
+      }
+      // ===== malware timeline (Sophos Threatsaurus, pp. 92–98)
+      const TL = [
+        [
+          1949,
+          "Programs that copy themselves",
+          "Mathematician John von Neumann writes that a computer program could reproduce itself. For now, it's only an idea.",
+          "Idea",
+          "Virus",
+        ],
+        [
+          1959,
+          "Core Wars",
+          "Researchers at Bell Labs create a game where programs called “organisms” fight for computer time.",
+          "Game",
+          "Malware",
+        ],
+        [
+          1971,
+          "The first worm",
+          "Creeper travels from computer to computer on ARPANET, the ancestor of the internet, and shows a message.",
+          "Worm",
+          "Internet worm",
+        ],
+        [
+          1982,
+          "Elk Cloner",
+          "A 15-year-old writes a virus for the Apple II. It spreads on floppy disks and shows a short poem every 50th time the computer starts.",
+          "Virus",
+          "Virus",
+        ],
+        [
+          1986,
+          "Brain, the first PC virus",
+          "Two brothers in Pakistan write the first virus for IBM PCs. It copies itself onto floppy disks.",
+          "Virus",
+          "Boot sector malware",
+        ],
+        [
+          1987,
+          "The Christmas tree worm",
+          "An email Christmas card draws a tree and secretly sends itself to everyone in your contacts. The traffic blocks IBM's worldwide network.",
+          "Worm",
+          "Email malware",
+        ],
+        [
+          1988,
+          "The Internet Worm",
+          "A 23-year-old student releases a worm that infects thousands of computers. An error makes it infect them again and again until they crash.",
+          "Worm",
+          "Internet worm",
+        ],
+        [
+          1989,
+          "The first ransom demand",
+          "The AIDS Trojan arrives on a floppy disk. It encrypts the hard disk and asks for money in exchange for the password.",
+          "Ransomware",
+          "Ransomware",
+        ],
+        [
+          1992,
+          "The Michelangelo panic",
+          "A virus designed to erase hard disks every March 6 causes worldwide panic, but very few computers are infected.",
+          "Virus",
+          "Virus",
+        ],
+        [
+          1994,
+          "The first email hoax",
+          "The “Good Times” message warns about a virus that erases your disk if you open an email. The virus doesn't exist.",
+          "Hoax",
+          "Hoax",
+        ],
+        [
+          1995,
+          "The first document virus",
+          "Concept hides inside Microsoft Word documents and spreads using macros.",
+          "Document malware",
+          "Document malware",
+        ],
+        [
+          1999,
+          "Email viruses go global",
+          "Melissa forwards itself by email and spreads around the world.",
+          "Email malware",
+          "Email malware",
+        ],
+        [
+          2000,
+          "Big websites go offline",
+          "DDoS attacks take Yahoo!, eBay and Amazon offline for hours. The Love Bug becomes the most successful email virus so far.",
+          "DDoS",
+          "Denial-of-service attack",
+        ],
+        [
+          2003,
+          "Zombies and phishing",
+          "The Sobig worm turns PCs into zombies that send spam. The Mimail worm pretends to be PayPal to steal credit card details.",
+          "Zombie · Phishing",
+          "Zombie",
+        ],
+        [
+          2005,
+          "Rootkits",
+          "A copy protection system on music CDs installs a rootkit that hides files. Hackers use it to hide their own malware.",
+          "Rootkit",
+          "Rootkit",
+        ],
+        [
+          2006,
+          "Early ransomware and APTs",
+          "Trojans like Archiveus encrypt files and ask for payment. The term “advanced persistent threat” (APT) is used for the first time.",
+          "Ransomware · APT",
+          "Advanced persistent threat",
+        ],
+        [
+          2008,
+          "Fake antivirus",
+          "Scary warnings trick people into paying for fake security products. The first iPhone malware also appears.",
+          "Fake antivirus",
+          "Fake antivirus",
+        ],
+        [
+          2009,
+          "The first Android malware",
+          "FakePlayer looks like a normal app but sends SMS messages to expensive numbers. The Conficker worm makes headlines worldwide.",
+          "Mobile malware",
+          "Mobile phone malware",
+        ],
+        [
+          2010,
+          "Stuxnet",
+          "A worm with a special mission: attacking industrial control systems. Its main target is believed to be uranium enrichment in Iran.",
+          "Worm",
+          "Internet worm",
+        ],
+        [
+          2013,
+          "Ransomware is back",
+          "Ransomware becomes one of the top threats. Strong encryption makes locked files almost impossible to recover.",
+          "Ransomware",
+          "Ransomware",
+        ],
+      ].map(([y, t, d, tag, g]) => ({ y, t, d, tag, g }));
+      const Y0 = 1949,
+        Y1 = 2013,
+        pos = (y) => (((y - Y0) / (Y1 - Y0)) * 100).toFixed(2) + "%";
+      const ERA = (y) =>
+        y < 1982
+          ? ["Era 1 · Experiments", "var(--accent)"]
+          : y < 2000
+            ? ["Era 2 · Pranks and vandalism", "var(--warn)"]
+            : ["Era 3 · Crime for money", "var(--flag)"];
+      let tlTimer = null,
+        tlI = 0,
+        tlShown = Y0;
+      function bindTimeline() {
+        const tr = $("tl-track");
+        tr.innerHTML =
+          `<div class="tl-band e1" style="left:0;width:${pos(1981.5)}"></div><div class="tl-band e2" style="left:${pos(1981.5)};width:calc(${pos(1999.5)} - ${pos(1981.5)})"></div><div class="tl-band e3" style="left:${pos(1999.5)};right:0"></div>` +
+          [1950, 1960, 1970, 1980, 1990, 2000, 2010]
+            .map(
+              (y) => `<span class="tl-axis" style="left:${pos(y)}">${y}</span>`,
+            )
+            .join("") +
+          TL.map(
+            (e, k) =>
+              `<button class="tl-dot" type="button" data-k="${k}" style="left:${pos(e.y)}" aria-label="${e.y}: ${e.t}"></button>`,
+          ).join("") +
+          `<div class="tl-mark" id="tl-mark"></div>`;
+        tr.querySelectorAll(".tl-dot").forEach(
+          (d) =>
+            (d.onclick = () => {
+              show(+d.dataset.k);
+              restart();
+            }),
+        );
+        $("tl-prev").onclick = () => {
+          show((tlI - 1 + TL.length) % TL.length);
+          restart();
+        };
+        $("tl-next").onclick = () => {
+          show((tlI + 1) % TL.length);
+          restart();
+        };
+        const fig = $("tl");
+        const restart = () => {
+          clearInterval(tlTimer);
+          tlTimer = setInterval(() => {
+            if (!document.body.contains(fig)) {
+              clearInterval(tlTimer);
+              return;
+            }
+            if (fig.classList.contains("paused")) return;
+            show((tlI + 1) % TL.length);
+          }, 4200);
+        };
+        tlShown = Y0;
+        show(0);
+        restart();
+      }
+      function show(k) {
+        tlI = k;
+        const e = TL[k];
+        const [era, col] = ERA(e.y);
+        $("tl-mark").style.left = pos(e.y);
+        document
+          .querySelectorAll(".tl-dot")
+          .forEach((d, j) => d.classList.toggle("on", j === k));
+        $("tl-era").textContent = era;
+        $("tl-era").style.color = col;
+        $("tl-era").style.borderColor = col;
+        $("tl-card-wrap").innerHTML =
+          `<div class="tl-card" style="border-color:${col}"><span class="tl-tag">${e.tag}</span><h3>${e.y} · ${e.t}</h3><p>${e.d}</p><button class="linkbtn" type="button" data-go="glossary" data-q="${e.g}">Look up “${e.g}” in the A–Z →</button></div>`;
+        // count the year up/down
+        const from = tlShown,
+          to = e.y,
+          t0 = performance.now(),
+          dur = RM ? 0 : 650;
+        const step = (now) => {
+          const p = dur ? Math.min(1, (now - t0) / dur) : 1;
+          const yr = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+          const el = $("tl-year");
+          if (!el) return;
+          el.textContent = yr;
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        tlShown = to;
+      }
+
+      // ===== Threatsaurus A–Z (simplified definitions; page numbers from the PDF)
+      // ===== Threatsaurus A–Z (simplified definitions; page numbers from the PDF)
+      const G = [
+        [
+          "Advanced persistent threat (APT)",
+          "amenaza persistente avanzada",
+          "An APT is a planned attack on a specific organization. The attacker works to get into its network and may stay there for a long time to find important information.",
+          6,
+          "t",
+        ],
+        [
+          "Adware",
+          "software publicitario",
+          "Adware displays advertising banners or pop-ups while you use an application. It can fund free software, but becomes a problem if it is installed without consent, spreads into other applications, tracks browsing without permission, hijacks the browser, or is difficult to uninstall.",
+          7,
+          "t",
+        ],
+        [
+          "Anonymizing proxy",
+          "proxy anonimizador",
+          "An anonymizing proxy hides a user's web browsing activity and is often used to bypass web security filters. In an organization, that can allow access to unauthorized pages and create security or legal liability risks.",
+          8,
+          "t",
+        ],
+        [
+          "Autorun worm",
+          "gusano de ejecución automática",
+          "An autorun worm uses the Windows AutoRun feature to start automatically when the device storing it is connected to a computer. USB drives are a common way it spreads; attackers have also exploited the similar AutoPlay feature on removable media.",
+          9,
+          "t",
+        ],
+        [
+          "Backdoor Trojan",
+          "troyano de puerta trasera",
+          "A backdoor Trojan may disguise itself as legitimate software or reach a computer through a spam link or malicious webpage. Once running, it can let its sender remotely run programs, access or change files, record keystrokes, upload files, or send spam from the computer.",
+          10,
+          "t",
+        ],
+        [
+          "Boot sector malware",
+          "malware del sector de arranque",
+          "Boot sector malware replaces or modifies the program that a computer uses to start, often keeping the original elsewhere on the disk. The infected boot program runs at startup, sometimes before the operating system, which can help the malware conceal itself.",
+          11,
+          "t",
+        ],
+        [
+          "Botnet",
+          "red de bots",
+          "A botnet is a group of computers infected with malicious software and controlled remotely by a hacker, often without their owners' knowledge. The group can be used to send spam or launch distributed denial-of-service attacks, and access to it may be shared or sold.",
+          12,
+          "t",
+        ],
+        [
+          "Browser hijacker",
+          "secuestrador de navegador",
+          "A browser hijacker changes a browser's default homepage or search engine without permission. Some hijackers make these settings difficult to restore or redirect clicks, and may be used to increase advertising revenue or a site's ranking in search results.",
+          13,
+          "t",
+        ],
+        [
+          "Brute force attack",
+          "ataque de fuerza bruta",
+          "A brute force attack tries a very large number of possible passwords or keyword combinations to gain unauthorized access to a system, file, or protected message. Attackers commonly use computer programs to automate these attempts.",
+          14,
+          "t",
+        ],
+        [
+          "Buffer overflow",
+          "desbordamiento de búfer",
+          "A buffer overflow happens when a program gets more information than it can handle. This can make the program stop working or let an attacker run harmful code.",
+          15,
+          "t",
+        ],
+        [
+          "Command and control center (C&C)",
+          "centro de comando y control",
+          "A command and control center is a computer used to control a botnet of compromised computers. From it, a hacker can instruct many infected machines to carry out the same activity, such as a distributed denial-of-service attack.",
+          16,
+          "t",
+        ],
+        [
+          "Cookie",
+          "cookie",
+          "A cookie is a small file a website places on your computer so it can remember details such as preferences or login information. Cookies can also track visits and browsing interests for advertising, which may affect privacy, but they cannot infect a computer.",
+          17,
+          "t",
+        ],
+        [
+          "Data leakage",
+          "fuga de datos",
+          "Data leakage is the unauthorized exposure of information, whether accidental or deliberate. It can expose confidential details about an organization, its workers, customers, or the public, and may result in data theft or data loss.",
+          18,
+          "t",
+        ],
+        [
+          "Data loss",
+          "pérdida de datos",
+          "Data loss is the accidental misplacement of data, rather than its deliberate theft. It often happens when a device such as a laptop, phone, or USB drive is lost; without protection such as encryption, the data could fall into the wrong hands.",
+          19,
+          "t",
+        ],
+        [
+          "Data theft",
+          "robo de datos",
+          "Data theft is the deliberate taking of information, either by someone inside an organization or by an outside criminal. It can involve malware that accesses a computer and captures details such as usernames and passwords, or the theft of a device that stores data.",
+          20,
+          "t",
+        ],
+        [
+          "Denial-of-service attack (DoS)",
+          "ataque de denegación de servicio",
+          "A denial-of-service attack overloads or shuts down a computer or service so legitimate users cannot access it, often making a website unavailable. The attack does not necessarily steal or compromise data, but the interruption can be costly; a botnet can make it distributed (DDoS).",
+          21,
+          "t",
+        ],
+        [
+          "DNS hijacking",
+          "secuestro de DNS",
+          "DNS helps your device find websites. In DNS hijacking, someone changes those settings so you may be sent to a fake website or blocked from security updates.",
+          22,
+          "t",
+        ],
+        [
+          "Document malware",
+          "malware en documentos",
+          "Document malware hides malicious content in a document and exploits a vulnerability in the application used to open or edit it. Carefully crafted Word, Excel, or PDF files can therefore infect or compromise a computer when opened in a vulnerable program.",
+          23,
+          "t",
+        ],
+        [
+          "Drive-by download",
+          "descarga no autorizada",
+          "A drive-by download infects a computer when a user visits a malicious or compromised website, sometimes without clicking anything or realizing it. The malware can exploit weaknesses in the browser or its plugins to download and run.",
+          24,
+          "t",
+        ],
+        [
+          "Email malware",
+          "malware por correo",
+          "Email malware is malicious software distributed through email. It may arrive as an attachment that runs when opened, or the message may link to a malicious website; attackers have often used email to direct people to such sites.",
+          25,
+          "t",
+        ],
+        [
+          "Exploit",
+          "exploit",
+          "An exploit takes advantage of a vulnerability in software to access or infect a computer. It often targets a particular application flaw; a zero-day exploit is used before the software vendor knows about the vulnerability or has a patch available.",
+          26,
+          "t",
+        ],
+        [
+          "Fake antivirus",
+          "antivirus falso",
+          "Fake antivirus malware reports threats that do not exist to frighten people into installing malicious software or paying for unnecessary registration or cleanup. It is also called scareware and is often distributed through deceptive websites or links in spam.",
+          27,
+          "t",
+        ],
+        [
+          "Hacktivism",
+          "hacktivismo",
+          "Hacktivism is hacking carried out for political or social purposes, often to make a point against an organization, government, or individual. Tactics described in the Threatsaurus include defacing websites, redirecting traffic, launching denial-of-service attacks, and stealing information.",
+          28,
+          "t",
+        ],
+        [
+          "Hoax",
+          "engaño, bulo",
+          "A hoax is a false, unsubstantiated claim intended to trick or defraud people. A hoax message may invent a dangerous malware warning or urge recipients to forward it; widespread forwarding can consume bandwidth, overload mail servers, or distract from real threats.",
+          29,
+          "t",
+        ],
+        [
+          "Honeypot",
+          "trampa, señuelo",
+          "A honeypot is a security trap used to detect hacking attempts or collect malware samples. It may be a machine set up to capture malware or a fake network service, such as a web server, that records incoming attacks.",
+          30,
+          "t",
+        ],
+        [
+          "Internet worm",
+          "gusano",
+          "An Internet worm is malware that copies itself across the Internet or local networks without attaching to a carrier program or file. It can spread rapidly; some worms also open a backdoor that lets hackers control a computer or use it to send spam.",
+          31,
+          "t",
+        ],
+        [
+          "Keylogging",
+          "registro de teclas",
+          "Keylogging is the secret recording of keystrokes by an unauthorized third party. Malware may use it to capture usernames, passwords, credit card details, and other sensitive information as a person types.",
+          32,
+          "t",
+        ],
+        [
+          "Malware",
+          "software malicioso",
+          "Malware is the general name for malicious software. It includes viruses, worms, Trojans, and spyware, so antivirus software is intended to detect a wider range of threats than viruses alone.",
+          33,
+          "t",
+        ],
+        [
+          "Mobile phone malware",
+          "malware para celulares",
+          "Mobile phone malware is malicious software intended to run on devices such as smartphones and tablets. It may steal confidential information, pose as fake antivirus software, or send messages or place calls to premium-rate numbers.",
+          34,
+          "t",
+        ],
+        [
+          "Parasitic virus",
+          "virus parásito",
+          "A parasitic virus, also called a file virus, attaches itself to a program. When that infected program starts, the virus code runs and can then pass control back to the original program while using the program's permissions to make changes or copy itself.",
+          35,
+          "t",
+        ],
+        [
+          "Patches",
+          "parches",
+          "Patches are software add-ons that fix bugs, including security vulnerabilities, in operating systems or applications. Applying them promptly closes weaknesses that malware and hackers may otherwise exploit.",
+          36,
+          "t",
+        ],
+        [
+          "Phishing",
+          "phishing, suplantación",
+          "Phishing deceives recipients into sharing sensitive information with a cybercriminal. A message may pretend to come from a bank, social network, online service, or a department in the recipient's organization; attachments can also infect a computer if opened.",
+          37,
+          "t",
+        ],
+        [
+          "Potentially unwanted application (PUA)",
+          "aplicación potencialmente no deseada",
+          "A potentially unwanted application is not necessarily malicious and may be useful in some situations, but it may be unsuitable for a business environment or create security concerns. Examples include adware, remote PC administration tools, and vulnerability scanners.",
+          38,
+          "t",
+        ],
+        [
+          "Ransomware",
+          "ransomware, secuestro de datos",
+          "Ransomware is software that denies access to files or a computer until a ransom is paid. It can hold data hostage by placing it in a password-protected or encrypted form, making the original files inaccessible.",
+          39,
+          "t",
+        ],
+        [
+          "Rootkit",
+          "rootkit",
+          "A rootkit is software that hides programs or processes running on a computer. Malware may use one to conceal tools such as keystroke loggers or password sniffers, or to let hackers use the computer without the owner's knowledge.",
+          40,
+          "t",
+        ],
+        [
+          "Social engineering",
+          "ingeniería social",
+          "Social engineering uses deception to make a person perform an action chosen by an attacker. This may mean opening a malicious webpage or attachment, or revealing a username or password that can help the attacker steal data.",
+          41,
+          "t",
+        ],
+        [
+          "Social networking",
+          "redes sociales",
+          "Social networking websites let people communicate and share information, but attackers can use them to spread malware or steal personal details. Information posted online may help with social engineering or security questions, and a compromised friend's account can spread malicious content.",
+          42,
+          "t",
+        ],
+        [
+          "Spam",
+          "correo basura",
+          "Spam is unsolicited bulk email sent to inboxes, like electronic junk mail. It can distribute malware or scams, consume bandwidth and storage, waste staff time, and make important messages easier to overlook; spammers may disguise messages or use compromised accounts.",
+          43,
+          "t",
+        ],
+        [
+          "Spearphishing",
+          "phishing dirigido",
+          "Spearphishing is phishing aimed at specific people in an organization, using spoofed messages to persuade them to reveal sensitive information or credentials. The message may appear to come from a colleague or trusted department and link to a fake company site.",
+          44,
+          "t",
+        ],
+        [
+          "Spoofing (email)",
+          "suplantación de correo",
+          "Email spoofing forges the sender address so a message appears to come from a trusted person or organization, including someone inside the recipient's organization. Criminals use it to support phishing, direct people to bogus sites, or conceal who sent a scam.",
+          45,
+          "t",
+        ],
+        [
+          "Spyware",
+          "software espía",
+          "Spyware lets advertisers or hackers gather sensitive information without permission. It may track a person's activity, such as websites visited, and send it to unauthorized parties; running spyware can also use memory and processing capacity and slow or crash a computer.",
+          46,
+          "t",
+        ],
+        [
+          "SQL injection",
+          "inyección SQL",
+          "Some websites use databases to store information. In an SQL injection attack, a criminal enters special text into a website form to trick the database into showing or changing information.",
+          47,
+          "t",
+        ],
+        [
+          "Suspicious files and behavior",
+          "archivos y comportamiento sospechosos",
+          "An endpoint security scanner may label a file suspicious when it has questionable characteristics or behaves in a questionable way, such as copying itself to a system folder. Runtime protection can watch running programs and block activity that appears malicious.",
+          48,
+          "t",
+        ],
+        [
+          "Trojan (Trojan horse)",
+          "troyano",
+          "A Trojan pretends to be legitimate software but secretly performs harmful functions. Once installed, it may add spyware or other malware, compromise the computer, or damage data while the user believes they are running an ordinary program.",
+          49,
+          "t",
+        ],
+        [
+          "Virus",
+          "virus",
+          "A virus is a malicious program that can spread by attaching itself to other files or to code that runs when certain files are opened. It may display messages, steal data, or give hackers control, and can arrive in an email attachment, download, or USB drive.",
+          50,
+          "t",
+        ],
+        [
+          "Vulnerability",
+          "vulnerabilidad",
+          "A vulnerability is a bug or weakness in software that hackers can exploit to compromise a computer. Vendors may issue patches to fix it; an attack that uses a vulnerability before it is known or patched is called a zero-day attack.",
+          51,
+          "t",
+        ],
+        [
+          "Zombie",
+          "zombi",
+          "A zombie is an infected computer that a hacker controls remotely over the Internet, usually without the user's knowledge. It is part of a botnet and may be used to send spam, launch denial-of-service attacks, or infect other systems.",
+          52,
+          "t",
+        ],
+        [
+          "Anti-malware",
+          "antimalware",
+          "Anti-malware software scans for viruses, Trojans, worms, spyware, and other malicious programs. It can compare files with known malware identities, analyze program behavior for unknown threats, and check files continuously as they are opened or in a scan started on demand.",
+          54,
+          "d",
+        ],
+        [
+          "Anti-spam",
+          "antispam",
+          "Anti-spam software evaluates messages using clues such as block lists, links, sender details, keywords, and suspicious patterns. Depending on its settings, it can block or delete likely spam, and it needs updated rules to recognize spammers' changing techniques.",
+          55,
+          "d",
+        ],
+        [
+          "Appliances",
+          "equipos de seguridad",
+          "A security appliance combines hardware and software in one solution that can be connected to a network instead of installing each program separately. Email, web, and UTM appliances commonly sit at the gateway and filter traffic for threats such as malware, spam, and data loss.",
+          56,
+          "d",
+        ],
+        [
+          "Application control",
+          "control de aplicaciones",
+          "Application control lets an organization restrict which programs can run on business computers or networks. Controlling applications such as file-sharing tools, games, media players, remote administration tools, or messaging clients can reduce the risk of malware and data loss.",
+          57,
+          "d",
+        ],
+        [
+          "Device control",
+          "control de dispositivos",
+          "Device control governs the use of removable storage, optical drives, and wireless networking protocols. An organization can apply a central policy to decide which devices may connect, helping manage data loss risks and malware spread through USB drives.",
+          58,
+          "d",
+        ],
+        [
+          "Encryption",
+          "cifrado",
+          "Encryption transforms data so it can be read only by someone with the right key or password to decrypt it. It can protect files on computers, removable media, email, networks, and cloud storage, including data accessed by authorized mobile workers.",
+          59,
+          "d",
+        ],
+        [
+          "Endpoint security",
+          "seguridad de terminales",
+          "Endpoint security protects computers and other devices against a range of security, productivity, and compliance threats, while allowing their security to be managed centrally. A product may combine tools such as antivirus, firewall, device and application control, encryption, web security, and patch management.",
+          60,
+          "d",
+        ],
+        [
+          "Firewall",
+          "cortafuegos",
+          "A firewall acts as a barrier that inspects incoming and outgoing network traffic and allows or blocks it according to set criteria. It may protect a whole network at its boundary or run on an individual computer, and can filter by addresses, ports, protocols, or packet attributes.",
+          61,
+          "d",
+        ],
+        [
+          "HTTPS scanning",
+          "análisis HTTPS",
+          "HTTPS scanning decrypts encrypted web traffic, checks it for malicious content, and then encrypts it again. The scan can find and remove threats automatically without a person viewing the traffic's contents.",
+          62,
+          "d",
+        ],
+        [
+          "Intrusion prevention system (IPS)",
+          "sistema de prevención de intrusiones",
+          "An intrusion prevention system monitors a network or computer systems for malicious activity. It can record activity, try to block it, and report it to network administrators to help prevent infections.",
+          63,
+          "d",
+        ],
+        [
+          "IPsec",
+          "IPsec",
+          "IPsec helps protect information sent between computers over a network. It checks who is connected and scrambles the information so other people cannot easily read it.",
+          64,
+          "d",
+        ],
+        [
+          "Mobile device security",
+          "seguridad de dispositivos móviles",
+          "Mobile device security is the policies, procedures, and tools used to protect mobile devices and the data on them. It includes keeping software current, being cautious about new apps, using current security software, and investigating suspicious activity; management systems can centralize some tasks.",
+          65,
+          "d",
+        ],
+        [
+          "Network access control (NAC)",
+          "control de acceso a la red",
+          "Network access control protects a network and its information by checking users and devices before granting access. It can authenticate them, assess whether a computer meets security requirements, and apply access rules based on the user's role.",
+          66,
+          "d",
+        ],
+        [
+          "Runtime protection",
+          "protección en tiempo de ejecución",
+          "Runtime protection watches programs while they run and blocks activity that may be malicious, such as changes that could make malware start automatically. Related systems can monitor code behavior or catch attempts to exploit buffer-overflow vulnerabilities.",
+          67,
+          "d",
+        ],
+        [
+          "Unified threat management (UTM)",
+          "gestión unificada de amenazas",
+          "Unified threat management (UTM) is one security device or service that combines several protections, such as a firewall and checks for spam or harmful software.",
+          68,
+          "d",
+        ],
+        [
+          "URL filtering",
+          "filtrado de URL",
+          "URL or web content filtering lets an organization block particular websites or whole categories of sites. Restricting access can reduce the risk of users encountering web-based malware and phishing attacks.",
+          69,
+          "d",
+        ],
+        [
+          "VPN",
+          "red privada virtual",
+          "A virtual private network connects remote computers or offices to a central network over the Internet. Remote users typically authenticate with a password or key so they can communicate with or access the organization's servers securely.",
+          70,
+          "d",
+        ],
+        [
+          "Web application control",
+          "control de aplicaciones web",
+          "Web application control blocks or limits web applications that an organization considers unwanted or risky, such as peer-to-peer file sharing or instant messaging. It can also ensure critical applications receive suitable bandwidth.",
+          71,
+          "d",
+        ],
+        [
+          "Web application firewall (WAF)",
+          "firewall de aplicaciones web",
+          "A web application firewall scans activity directed at web servers to identify probes and attacks. It protects servers that are accessible from the Internet and may combine functions such as content and spam filtering, intrusion detection, and antivirus.",
+          72,
+          "d",
+        ],
+      ].map(([t, es, d, p, k]) => ({ t, es, d, p, k }));
+
+      function bindGlossary(q0) {
+        let kind = "all";
+        const norm = (s) =>
+          s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+        const gid = (t) => "g-" + t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const draw = () => {
+          const q = norm($("gq").value.trim());
+          const list = G.filter(
+            (g) =>
+              (kind === "all" || g.k === kind) &&
+              (!q || norm(g.t + " " + g.es + " " + g.d).includes(q)),
+          ).sort(
+            (a, b) =>
+              (q && norm(a.t).startsWith(q) ? 0 : 1) -
+                (q && norm(b.t).startsWith(q) ? 0 : 1) ||
+              a.t.localeCompare(b.t),
+          );
+          $("gcount").textContent =
+            `${list.length} ${list.length === 1 ? "word" : "words"}` +
+            (q ? ` for “${$("gq").value.trim()}”` : "");
+          $("glist").innerHTML = list.length
+            ? list
+                .map(
+                  (g) =>
+                    `<article class="gi${q && norm(g.t).startsWith(q) ? " hit" : ""}" id="${gid(g.t)}"><div class="meta"><span class="kind ${g.k}">${g.k === "t" ? "Threat" : "Security tool"}</span><span class="pg">Threatsaurus p. ${g.p}</span></div><h3>${g.t}</h3><span class="es">${g.es}</span><p>${g.d}</p></article>`,
+                )
+                .join("")
+            : `<p class="note">No words found. Try another word, in English or Spanish.</p>`;
+          const letters = [...new Set(list.map((g) => g.t[0].toUpperCase()))];
+          $("gl").innerHTML = letters
+            .map((L) => `<button type="button" data-l="${L}">${L}</button>`)
+            .join("");
+          $("gl")
+            .querySelectorAll("button")
+            .forEach(
+              (b) =>
+                (b.onclick = () => {
+                  const el = [...$("glist").children].find(
+                    (a) =>
+                      a.querySelector("h3").textContent[0].toUpperCase() ===
+                      b.dataset.l,
+                  );
+                  if (el)
+                    el.scrollIntoView({
+                      behavior: RM ? "auto" : "smooth",
+                      block: "start",
+                    });
+                }),
+            );
+        };
+        $("gq").value = q0;
+        $("gq").oninput = draw;
+        document.querySelectorAll(".chip2").forEach(
+          (c) =>
+            (c.onclick = () => {
+              kind = c.dataset.k;
+              document
+                .querySelectorAll(".chip2")
+                .forEach((x) => x.setAttribute("aria-pressed", x === c));
+              draw();
+            }),
+        );
+        draw();
+      }
+
+      function confetti() {
+        if (RM) return;
+        const cv = document.createElement("canvas");
+        cv.setAttribute("aria-hidden", "true");
+        cv.style.cssText =
+          "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50";
+        document.body.appendChild(cv);
+        const ctx = cv.getContext("2d"),
+          dpr = window.devicePixelRatio || 1;
+        const W = (cv.width = innerWidth * dpr),
+          H = (cv.height = innerHeight * dpr);
+        const cs = getComputedStyle(document.documentElement);
+        const cols = ["--accent", "--flag", "--warn", "--good"].map((v) =>
+          cs.getPropertyValue(v).trim(),
+        );
+        const P = Array.from({ length: 160 }, () => ({
+          x: Math.random() * W,
+          y: -Math.random() * H * 0.6,
+          vx: (Math.random() - 0.5) * 3 * dpr,
+          vy: (2 + Math.random() * 4) * dpr,
+          r: Math.random() * 6.28,
+          vr: (Math.random() - 0.5) * 0.3,
+          s: (5 + Math.random() * 6) * dpr,
+          c: cols[Math.floor(Math.random() * cols.length)],
+        }));
+        const t0 = performance.now();
+        const step = (now) => {
+          ctx.clearRect(0, 0, W, H);
+          P.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05 * dpr;
+            p.r += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.r);
+            ctx.fillStyle = p.c;
+            ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2);
+            ctx.restore();
+          });
+          if (now - t0 < 4000) requestAnimationFrame(step);
+          else cv.remove();
+        };
+        requestAnimationFrame(step);
+      }
+      go(0);
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
