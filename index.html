@@ -168,7 +168,9 @@
         font-weight: 700;
       }
 
-      .account-control input {
+      .account-control input,
+      .account-control select,
+      .account-control textarea {
         width: 100%;
         min-width: 0;
         padding: 8px;
@@ -177,6 +179,11 @@
         background: var(--bg);
         color: var(--ink);
         font: inherit;
+      }
+
+      .account-control textarea {
+        min-height: 96px;
+        resize: vertical;
       }
 
       .account-control button {
@@ -3513,14 +3520,36 @@
         ],
       ].map(([t, es, d, p, k]) => ({ t, es, d, p, k }));
 
+      let glossaryEntries = G;
+      window.addEventListener("cyber-glossary:update", (event) => {
+        const entries = event.detail;
+        if (!Array.isArray(entries) || entries.length === 0) return;
+        glossaryEntries = entries.map((entry) => ({
+          t: entry.term,
+          es: entry.translation_es,
+          d: entry.definition_en,
+          p: entry.sort_order,
+          k: entry.category === "Threat" ? "t" : "d",
+        }));
+        if (cur === GLOSS && $("gq")) bindGlossary($("gq").value);
+      });
+
       function bindGlossary(q0) {
         let kind = "all";
         const norm = (s) =>
           s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+        const escapeHTML = (s) =>
+          String(s).replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[char]);
         const gid = (t) => "g-" + t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
         const draw = () => {
           const q = norm($("gq").value.trim());
-          const list = G.filter(
+          const list = glossaryEntries.filter(
             (g) =>
               (kind === "all" || g.k === kind) &&
               (!q || norm(g.t + " " + g.es + " " + g.d).includes(q)),
@@ -3537,7 +3566,7 @@
             ? list
                 .map(
                   (g) =>
-                    `<article class="gi${q && norm(g.t).startsWith(q) ? " hit" : ""}" id="${gid(g.t)}"><div class="meta"><span class="kind ${g.k}">${g.k === "t" ? "Threat" : "Security tool"}</span><span class="pg">Threatsaurus p. ${g.p}</span></div><h3>${g.t}</h3><span class="es">${g.es}</span><p>${g.d}</p></article>`,
+                    `<article class="gi${q && norm(g.t).startsWith(q) ? " hit" : ""}" id="${gid(g.t)}"><div class="meta"><span class="kind ${g.k}">${g.k === "t" ? "Threat" : "Security tool"}</span><span class="pg">${Number.isFinite(Number(g.p)) && Number(g.p) > 0 ? `Threatsaurus p. ${Number(g.p)}` : ""}</span></div><h3>${escapeHTML(g.t)}</h3><span class="es">${escapeHTML(g.es)}</span><p>${escapeHTML(g.d)}</p></article>`,
                 )
                 .join("")
             : `<p class="note">No words found. Try another word, in English or Spanish.</p>`;

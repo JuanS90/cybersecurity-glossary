@@ -8,6 +8,7 @@ import {
   type AuthProfile,
 } from "./auth";
 import { isSupabaseConfigured } from "./supabase";
+import { getPublishedEntries, submitProposal, type ProposalData } from "./glossary";
 
 const roleLabels = {
   superadmin: "Superadmin",
@@ -187,6 +188,143 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
   });
 }
 
+function renderStudentProposalForm(card: HTMLElement, profile: AuthProfile) {
+  const details = make("details", "account-management");
+  const summary = make("summary", undefined, "Propose a glossary change");
+  const content = make("div", "account-card");
+  const form = make("form");
+  const message = make("p", "account-message", "A teacher reviews every proposal before it can appear in the public glossary.");
+  message.setAttribute("aria-live", "polite");
+
+  const operationLabel = make("label", undefined, "Change type");
+  const operation = make("select");
+  operation.name = "operation";
+  for (const [value, label] of [["create", "Suggest a new entry"], ["edit", "Suggest an edit"]]) {
+    const option = make("option", undefined, label);
+    option.value = value;
+    operation.append(option);
+  }
+  operationLabel.append(operation);
+
+  const entryLabel = make("label", undefined, "Entry to edit");
+  const entry = make("select");
+  entry.name = "entry_id";
+  entry.disabled = true;
+  entryLabel.append(entry);
+
+  const fields: Record<string, HTMLInputElement | HTMLTextAreaElement> = {};
+  const addField = (name: string, labelText: string, multiline = false, required = true) => {
+    const label = make("label", undefined, labelText);
+    const control = multiline ? make("textarea") : make("input");
+    control.name = name;
+    control.required = required;
+    if (name === "term" || name === "translation_es") control.maxLength = 200;
+    if (name === "definition_en" || name === "example_en") control.maxLength = 3000;
+    label.append(control);
+    fields[name] = control;
+    return label;
+  };
+
+  const categoryLabel = make("label", undefined, "Category");
+  const category = make("select");
+  category.name = "category";
+  for (const [value, label] of [["Threat", "Threat"], ["Security tool", "Security tool"]]) {
+    const option = make("option", undefined, label);
+    option.value = value;
+    category.append(option);
+  }
+  categoryLabel.append(category);
+
+  const term = addField("term", "Term");
+  const translation = addField("translation_es", "Spanish translation");
+  const definition = addField("definition_en", "Definition in simple English", true);
+  const example = addField("example_en", "Example in English (optional)", true, false);
+  const source = addField("source_reference", "Source (optional)", false, false);
+  const submit = make("button", undefined, "Send for teacher review");
+  submit.type = "submit";
+  form.append(message, operationLabel, entryLabel, term, translation, definition, example, categoryLabel, source, submit);
+  content.append(form);
+  details.append(summary, content);
+  card.append(details);
+
+  let publishedEntries: Awaited<ReturnType<typeof getPublishedEntries>> = null;
+  void getPublishedEntries().then((entries) => {
+    publishedEntries = entries;
+    entry.replaceChildren();
+    for (const item of entries ?? []) {
+      const option = make("option", undefined, item.term);
+      option.value = item.id;
+      entry.append(option);
+    }
+    if (entry.options.length === 0) {
+      entry.append(make("option", undefined, "Published entries are unavailable"));
+    }
+    entry.disabled = operation.value !== "edit" || entry.options.length === 0 || !publishedEntries;
+  }).catch(() => {
+    entry.replaceChildren(make("option", undefined, "Published entries are unavailable"));
+  });
+
+  const applySelectedEntry = () => {
+    const selected = publishedEntries?.find((item) => item.id === entry.value);
+    if (!selected) return;
+    fields.term.value = selected.term;
+    fields.translation_es.value = selected.translation_es;
+    fields.definition_en.value = selected.definition_en;
+    fields.example_en.value = selected.example_en ?? "";
+    fields.source_reference.value = selected.source_reference ?? "";
+    category.value = selected.category;
+  };
+  operation.addEventListener("change", () => {
+    const editing = operation.value === "edit";
+    entry.disabled = !editing || !publishedEntries || entry.options.length === 0;
+    if (editing) applySelectedEntry();
+  });
+  entry.addEventListener("change", applySelectedEntry);
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const isEdit = operation.value === "edit";
+    if (isEdit && !publishedEntries?.some((item) => item.id === entry.value)) {
+      message.textContent = "The published entry list is unavailable. Try again when the glossary service is available.";
+      message.dataset.kind = "error";
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = "Sending…";
+    message.textContent = "";
+    const value = (name: string) => fields[name].value.trim();
+    const data: ProposalData = {
+      term: value("term"),
+      translation_es: value("translation_es"),
+      definition_en: value("definition_en"),
+      example_en: value("example_en") || null,
+      category: category.value as ProposalData["category"],
+      source_reference: value("source_reference") || null,
+    };
+    try {
+      const { error } = await submitProposal({
+        operation: isEdit ? "edit" : "create",
+        entryId: isEdit ? entry.value : undefined,
+        data,
+        userId: profile.user_id,
+      });
+      if (error) throw error;
+      form.reset();
+      entry.selectedIndex = 0;
+      entry.disabled = true;
+      message.textContent = "Proposal sent. It will stay private until a teacher reviews it.";
+      message.dataset.kind = "info";
+    } catch {
+      message.textContent = "The proposal could not be sent. Check your connection or contact your teacher.";
+      message.dataset.kind = "error";
+      message.setAttribute("role", "alert");
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Send for teacher review";
+    }
+  });
+}
+
 function showTemporaryPassword(container: HTMLElement, password?: string) {
   container.querySelector(".temporary-password")?.remove();
   if (!password) return;
@@ -261,6 +399,7 @@ function renderAccount(host: HTMLElement, profile: AuthProfile) {
     changePassword.append(summary);
     showPasswordChangeForm(changePassword, false);
     card.append(changePassword);
+    if (profile.role === "student") renderStudentProposalForm(card, profile);
     renderAccountManagement(card, profile.role);
   }
 
