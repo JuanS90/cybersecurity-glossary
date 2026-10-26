@@ -6,7 +6,7 @@ export function createLessons({ v, words, quiz, reducedMotion }) {
           short: "Introduction",
           html: () => `
  <div class="lesson-head"><span class="eyebrow">Lesson 1 · Introduction</span><h1>What is cybersecurity?</h1>
- <p class="lead">Every day you use your phone to study, chat, play and watch videos. Criminals know this too. Cybersecurity is how we protect ourselves.</p></div>
+ <p class="lead">Learn simple ways to protect your accounts, devices and personal information.</p></div>
  <div class="prose">
   <p>${v("Cybersecurity", "ciberseguridad")} is the practice of protecting computers, phones, ${v("networks", "redes")} and ${v("personal information", "datos personales")} from attacks. An attack can come from a ${v("hacker", "pirata informático")}, a fake message or a dangerous app.</p>
   <p>Attackers usually want three things: your <b>accounts</b> (Instagram, email, games), your <b>money</b> and your <b>data</b>. The good news: most attacks fail if you have a few good habits. You don't need to be an expert to be safe.</p>
@@ -38,7 +38,7 @@ export function createLessons({ v, words, quiz, reducedMotion }) {
  <div class="prose">
   <p>Attackers use programs that try millions of passwords per second. Short passwords and common words like <code>123456</code>, <code>password</code> or your pet's name are ${v("cracked", "descifradas")} in seconds.</p>
   <p>A ${v("strong password", "contraseña segura")} is <b>long</b> (12 characters or more) and <b>unique</b> (you use it for only one account). A great trick is a ${v("passphrase", "frase de contraseña")}: four random words together, like <code>Purple-Mate-Rocket-47</code>. It's long, easy to remember and hard to crack.</p>
-  <p>Also turn on ${v("two-factor authentication (2FA)", "verificación en dos pasos")}. With 2FA, you use your password and a second way to prove it is you, such as a code or an app. If someone steals your password, they still need that second proof to ${v("log in", "iniciar sesión")}.</p>
+  <p>Also turn on ${v("two-factor authentication (2FA)", "autenticación de dos factores (verificación en dos pasos)")}. With 2FA, you use your password and a second way to prove it is you, such as a code or an app. If someone steals your password, they still need that second proof to ${v("log in", "iniciar sesión")}.</p>
  </div>
  <div class="box activity"><span class="eyebrow">Try it</span><h2>Password strength tester</h2>
   <p class="note">Type an example password (don't use your real one). Nothing is saved or sent.</p>
@@ -50,9 +50,9 @@ export function createLessons({ v, words, quiz, reducedMotion }) {
  ${words([
    ["weak", "débil"],
    ["strong", "fuerte, segura"],
-   ["unique", "único"],
+   ["unique", "única"],
    ["guess", "adivinar"],
-   ["2FA", "verificación en dos pasos"],
+   ["2FA", "autenticación de dos factores (verificación en dos pasos)"],
  ])}
  ${quiz("q2", "Which password is the strongest?", ["Juan2009", "qwerty123", "Taco-Cloud-Violin-Seven", "P@ss"], 2, "The passphrase is long and uses random words. Length is the most important thing.")}
 `,
@@ -126,7 +126,7 @@ export function createLessons({ v, words, quiz, reducedMotion }) {
    <div class="mini"><h3>Backup</h3><p>Make a ${v("backup", "copia de seguridad")}. If ransomware locks your files, you still have a copy.</p></div>
   </div>
  </div>
- <div class="row"><span class="note">There are many more types, like worms, rootkits and zombies.</span><button class="btn" type="button" data-go="glossary">See all 47 threats in the Threatsaurus A–Z →</button></div>
+ <div class="row"><span class="note">There are many more types, like worms, rootkits and zombies.</span><button class="btn" type="button" data-go="glossary">See all 47 threats in the Security glossary A–Z →</button></div>
  ${quiz("q4", 'You download a "free" version of a paid game from a strange website. Later, your passwords are stolen. What was the game probably?', ["A firewall", "A Trojan horse", "An update", "A backup"], 1, "A Trojan horse looks useful or fun but hides malware inside.")}
 `,
         },
@@ -226,16 +226,16 @@ export function createLessons({ v, words, quiz, reducedMotion }) {
   <li>Avoid important accounts on public Wi-Fi.</li>
   <li>If something is strange, ask for help.</li>
  </ol></div>
- <div class="row"><button class="btn" type="button" data-go="glossary">Open the Threatsaurus A–Z glossary →</button></div>
+ <div class="row"><button class="btn" type="button" data-go="glossary">Open the Security glossary A–Z →</button></div>
 `,
         },
         {
-          t: "Threatsaurus A–Z",
-          short: "Threatsaurus A–Z",
+          t: "Security glossary A–Z",
+          short: "Security glossary A–Z",
           ref: true,
           html: () => `
- <div class="lesson-head"><span class="eyebrow">Reference · Sophos Threatsaurus</span><h1>Threatsaurus A–Z</h1>
- <p class="lead">All the threats and security tools from the Threatsaurus, explained in simple English with the Spanish translation. The page numbers show where to find each word in the PDF.</p></div>
+ <div class="lesson-head"><span class="eyebrow">Adapted from the Sophos Threatsaurus (2013)</span><h1>Security glossary A–Z</h1>
+ <p class="lead">Explore threats and security tools in simple English, with Spanish translations. Page numbers show where each term appears in the Threatsaurus.</p></div>
  <div class="gbar">
   <input id="gq" type="search" placeholder="Search in English or Spanish…" aria-label="Search the glossary">
   <button class="chip2" type="button" data-k="all" aria-pressed="true">All</button>

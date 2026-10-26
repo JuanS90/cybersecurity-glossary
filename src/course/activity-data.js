@@ -26,7 +26,7 @@ export const FLAGS = [
         ],
         [
           "Generic greeting",
-          '"Dear Customer" means they don\'t know your name. Real companies usually use it.',
+          '"Dear Customer" means they don\'t know your name. Real companies usually don\'t use it.',
         ],
         [
           "Pressure and threats",

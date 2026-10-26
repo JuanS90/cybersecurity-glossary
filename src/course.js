@@ -3,7 +3,7 @@ import { COMMON, FLAGS, HAB, POSTS, SMS, TL } from "./course/activity-data.js";
 
 // v("word","spanish") — vocabulary marker
       const v = (w, es) =>
-        `<button class="v" type="button" title="${es}">${w}<span class="es">${es}</span></button>`;
+        `<button class="v" type="button">${w}<span class="es">${es}</span></button>`;
       const words = (list) =>
         `<div class="words">${list.map(([a, b]) => `<span class="word"><b>${a}</b> · <i>${b}</i></span>`).join("")}</div>`;
       const quiz = (id, q, opts, right, exp) =>
@@ -293,7 +293,6 @@ import { COMMON, FLAGS, HAB, POSTS, SMS, TL } from "./course/activity-data.js";
       });
       $("es-t").onchange = (e) =>
         document.body.classList.toggle("es", e.target.checked);
-
       function bindQuiz() {
         document.querySelectorAll("[data-quiz]").forEach((box) => {
           const fb = box.querySelector(".fb");

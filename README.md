@@ -1,34 +1,21 @@
-# Cyber Basics
+# Cybersecurity-glossary
 
-Cyber Basics es una aplicación educativa para aprender conceptos básicos de ciberseguridad. Reúne un curso interactivo en inglés sencillo y un glosario de amenazas y herramientas de seguridad con traducciones al español.
+Cybersecurity es un proyecto educativo para introducir conceptos básicos de ciberseguridad y practicar vocabulario en inglés sencillo, con apoyo en español. Está pensado para estudiantes que recién comienzan y combina explicaciones claras con situaciones cotidianas.
 
-## Qué ofrece
+## Contenido del proyecto
 
-- Siete lecciones con explicaciones, ejemplos y actividades breves.
-- Un glosario alfabético con búsqueda en inglés y español.
-- Definiciones claras para acompañar el aprendizaje de vocabulario de ciberseguridad.
-- Una experiencia pública de consulta que no requiere una cuenta.
+- Un curso interactivo de siete lecciones sobre contraseñas, phishing, malware, privacidad y hábitos digitales seguros.
+- Ejemplos y actividades breves para aplicar lo aprendido.
+- Un glosario público y bilingüe de amenazas y herramientas de seguridad, con búsqueda alfabética.
+- Cuentas para estudiantes y docentes: los estudiantes pueden proponer cambios al glosario y un docente los revisa antes de publicarlos.
 
-El contenido educativo se encuentra principalmente en `index.html`. La aplicación también contempla cuentas para estudiantes y docentes, propuestas de cambios y revisión docente. La integración con Supabase está en desarrollo y todavía no está conectada a un proyecto real.
+## Objetivo
+
+Ofrecer un recurso accesible que ayude a aprender prácticas básicas de seguridad digital mientras se incorpora vocabulario de ciberseguridad en inglés.
 
 ## Tecnologías
 
 - **HTML, CSS y JavaScript** para la experiencia web y el contenido educativo.
 - **TypeScript** para las nuevas funciones del cliente.
 - **Vite** para el servidor de desarrollo y la compilación del sitio.
-- **Supabase Auth, PostgreSQL, Row Level Security y Edge Functions** como backend previsto para cuentas y futuras propuestas. La configuración y validación de ese backend siguen pendientes.
-
-## Ejecutar localmente
-
-Se necesita Node.js 22 o posterior.
-
-```bash
-npm install
-npm run dev
-```
-
-Para generar una versión estática en `dist/`:
-
-```bash
-npm run build
-```
+- **Supabase Auth, PostgreSQL, Row Level Security y Edge Functions** para la gestión de cuentas, almacenamiento de datos y control de acceso.
