@@ -39,7 +39,7 @@ export async function getPublishedEntries(): Promise<GlossaryEntry[] | null> {
     .select("id, term, translation_es, definition_en, example_en, category, source_reference, sort_order")
     .order("sort_order", { ascending: true });
 
-  if (error || !data || data.length === 0) return null;
+  if (error || !data) return null;
   return data as GlossaryEntry[];
 }
 
