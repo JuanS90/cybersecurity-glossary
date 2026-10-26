@@ -18,7 +18,7 @@ type AccountProfile = {
 };
 
 const maxBodyLength = 8_192;
-const temporaryPasswordLength = 8;
+const temporaryPasswordLength = ;
 const passwordAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%_-";
 const passwordGroups = ["ABCDEFGHJKLMNPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "23456789", "!@#$%_-"];
 

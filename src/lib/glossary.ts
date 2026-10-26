@@ -20,6 +20,17 @@ export interface ProposalData {
   source_reference: string | null;
 }
 
+export interface PendingProposal {
+  id: string;
+  operation: "create" | "edit";
+  entry_id: string | null;
+  proposed_data: ProposalData;
+  submitted_by: string;
+  submitted_at: string;
+  submitter_name: string;
+  current_data: ProposalData | null;
+}
+
 export async function getPublishedEntries(): Promise<GlossaryEntry[] | null> {
   if (!supabase) return null;
 
@@ -45,5 +56,23 @@ export async function submitProposal(input: {
     entry_id: input.operation === "edit" ? input.entryId : null,
     proposed_data: input.data,
     submitted_by: input.userId,
+  });
+}
+
+export async function getPendingProposals() {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  return supabase.rpc("list_pending_glossary_proposals");
+}
+
+export async function reviewProposal(input: {
+  proposalId: string;
+  decision: "approve" | "reject";
+  reviewNote?: string;
+}) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  return supabase.rpc("review_glossary_proposal", {
+    p_proposal_id: input.proposalId,
+    p_decision: input.decision,
+    p_review_note: input.reviewNote?.trim() || null,
   });
 }
