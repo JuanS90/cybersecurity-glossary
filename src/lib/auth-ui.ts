@@ -516,7 +516,7 @@ function showPasswordChangeDialog(host: HTMLElement, required: boolean, accountC
   password.type = "password";
   password.name = "new-password";
   password.autocomplete = "new-password";
-  password.minLength = 12;
+  password.minLength = 8;
   password.required = true;
   passwordLabel.append(password);
 
@@ -525,7 +525,7 @@ function showPasswordChangeDialog(host: HTMLElement, required: boolean, accountC
   confirmation.type = "password";
   confirmation.name = "confirm-password";
   confirmation.autocomplete = "new-password";
-  confirmation.minLength = 12;
+  confirmation.minLength = 8;
   confirmation.required = true;
   confirmationLabel.append(confirmation);
 
