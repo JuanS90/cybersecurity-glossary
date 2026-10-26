@@ -30,8 +30,24 @@ export async function signOut() {
   return getClient().auth.signOut();
 }
 
+export async function updateOwnPassword(password: string) {
+  return getClient().auth.updateUser({ password });
+}
+
 export async function manageAccount(body: Record<string, unknown>) {
-  return getClient().functions.invoke("manage-accounts", { body });
+  const client = getClient();
+  const { data, error } = await client.auth.getSession();
+  if (error) throw error;
+  if (!data.session?.access_token) {
+    const sessionError = new Error("Sign in again to use account tools.");
+    sessionError.name = "AuthSessionMissingError";
+    throw sessionError;
+  }
+
+  return client.functions.invoke("manage-accounts", {
+    body,
+    headers: { Authorization: `Bearer ${data.session.access_token}` },
+  });
 }
 
 export async function getCurrentSession() {

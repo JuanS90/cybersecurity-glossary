@@ -8,7 +8,7 @@ type AccountAction =
   | "set_student_status"
   | "set_teacher_status"
   | "reset_student_password"
-  | "change_own_password";
+  | "complete_own_password_change";
 
 type AccountProfile = {
   user_id: string;
@@ -18,7 +18,7 @@ type AccountProfile = {
 };
 
 const maxBodyLength = 8_192;
-const temporaryPasswordLength = 32;
+const temporaryPasswordLength = 12;
 const passwordAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%_-";
 const passwordGroups = ["ABCDEFGHJKLMNPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "23456789", "!@#$%_-"];
 
@@ -84,7 +84,7 @@ function isAccountAction(value: unknown): value is AccountAction {
     || value === "set_student_status"
     || value === "set_teacher_status"
     || value === "reset_student_password"
-    || value === "change_own_password";
+    || value === "complete_own_password_change";
 }
 
 async function loadCallerProfile(ctx: Awaited<ReturnType<typeof createSupabaseContext>>["data"]) {
@@ -141,23 +141,14 @@ async function handleRequest(request: Request, origin: string) {
   if (!caller || caller.status !== "active") {
     return jsonResponse(origin, { error: "An active course profile is required." }, 403);
   }
-  if (caller.must_change_password && body.action !== "change_own_password") {
+  if (caller.must_change_password && body.action !== "complete_own_password_change") {
     return jsonResponse(origin, { error: "Change the temporary password before using account tools." }, 403);
   }
 
   const callerId = ctx.userClaims.id;
   const admin = ctx.supabaseAdmin;
 
-  if (body.action === "change_own_password") {
-    const password = typeof body.password === "string" ? body.password : null;
-    const confirmation = typeof body.confirmation === "string" ? body.confirmation : null;
-    if (!password || password.length < 12 || password.length > 256 || password !== confirmation) {
-      return jsonResponse(origin, { error: "Use a matching password with at least 12 characters." }, 400);
-    }
-
-    const { error: passwordError } = await ctx.supabase.auth.updateUser({ password });
-    if (passwordError) return jsonResponse(origin, { error: "The password could not be changed." }, 400);
-
+  if (body.action === "complete_own_password_change") {
     if (caller.must_change_password) {
       const { error: profileError } = await admin
         .from("profiles")
@@ -166,7 +157,7 @@ async function handleRequest(request: Request, origin: string) {
       if (profileError) {
         return jsonResponse(
           origin,
-          { error: "The password changed, but account activation is incomplete. Sign in again and retry." },
+          { error: "The password changed, but account activation is incomplete. Retry to finish." },
           503,
         );
       }
@@ -174,12 +165,13 @@ async function handleRequest(request: Request, origin: string) {
     return jsonResponse(origin, { ok: true });
   }
 
-  const permittedRole = body.action === "create_teacher"
+  const requiresSuperadmin = body.action === "create_teacher"
     || body.action === "set_teacher_status"
-    || body.action === "list_teacher_accounts"
-    ? "superadmin"
-    : "teacher";
-  if (caller.role !== permittedRole) {
+    || body.action === "list_teacher_accounts";
+  if (requiresSuperadmin && caller.role !== "superadmin") {
+    return jsonResponse(origin, { error: "This role cannot perform that account operation." }, 403);
+  }
+  if (!requiresSuperadmin && caller.role !== "teacher" && caller.role !== "superadmin") {
     return jsonResponse(origin, { error: "This role cannot perform that account operation." }, 403);
   }
 

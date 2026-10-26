@@ -23,6 +23,12 @@ max_rows = 1000
 # auto_expose_new_tables = true
 auto_expose_new_tables = false
 
+[functions.manage-accounts]
+# The handler validates the user JWT with createSupabaseContext({ auth: "user" }).
+# Disable only the platform's legacy pre-handler check so browser preflight and
+# current Supabase auth keys can reach the handler; unauthenticated POSTs still fail there.
+verify_jwt = false
+
 [api.tls]
 # Enable HTTPS endpoints locally using a self-signed certificate.
 enabled = false

@@ -5,6 +5,7 @@ import {
   onAuthStateChange,
   signInWithPassword,
   signOut,
+  updateOwnPassword,
   type AuthProfile,
 } from "./auth";
 import { isSupabaseConfigured } from "./supabase";
@@ -45,13 +46,30 @@ interface ManagedAccount {
 function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
   if (role === "student") return;
 
-  const targetRole = role === "teacher" ? "student" : "teacher";
-  const createAction = role === "teacher" ? "create_student" : "create_teacher";
-  const listAction = role === "teacher" ? "list_student_accounts" : "list_teacher_accounts";
+  const isSuperadmin = role === "superadmin";
+  let targetRole: "teacher" | "student" = role === "teacher" ? "student" : "teacher";
   const details = make("details", "account-management");
-  const summary = make("summary", undefined, role === "teacher" ? "Manage student accounts" : "Manage teacher accounts");
+  const summary = make("summary", undefined, isSuperadmin ? "Manage accounts" : "Manage student accounts");
   const content = make("div", "account-card");
   const form = make("form");
+
+  let targetRoleSelect: HTMLSelectElement | undefined;
+  if (isSuperadmin) {
+    const roleLabel = make("label", undefined, "Account type");
+    targetRoleSelect = make("select");
+    targetRoleSelect.name = "role";
+    for (const [value, label] of [["teacher", "Teacher"], ["student", "Student"]]) {
+      const option = make("option", undefined, label);
+      option.value = value;
+      targetRoleSelect.append(option);
+    }
+    targetRoleSelect.addEventListener("change", () => {
+      targetRole = targetRoleSelect!.value as "teacher" | "student";
+      createButton.textContent = `Create ${targetRole}`;
+    });
+    roleLabel.append(targetRoleSelect);
+    form.append(roleLabel);
+  }
 
   const nameLabel = make("label", undefined, "Display name");
   const name = make("input");
@@ -70,7 +88,7 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
   email.required = true;
   emailLabel.append(email);
 
-  const createButton = make("button", undefined, targetRole === "student" ? "Create student" : "Create teacher");
+  const createButton = make("button", undefined, `Create ${targetRole}`);
   createButton.type = "submit";
   form.append(nameLabel, emailLabel, createButton);
 
@@ -90,9 +108,23 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
   const loadAccounts = async () => {
     list.replaceChildren(make("li", undefined, "Loading accounts…"));
     try {
-      const { data, error } = await manageAccount({ action: listAction });
-      if (error) throw error;
-      const accounts = (data as { accounts?: ManagedAccount[] } | null)?.accounts ?? [];
+      let accounts: ManagedAccount[];
+      if (isSuperadmin) {
+        const [teachers, students] = await Promise.all([
+          manageAccount({ action: "list_teacher_accounts" }),
+          manageAccount({ action: "list_student_accounts" }),
+        ]);
+        if (teachers.error) throw teachers.error;
+        if (students.error) throw students.error;
+        accounts = [
+          ...((teachers.data as { accounts?: ManagedAccount[] } | null)?.accounts ?? []),
+          ...((students.data as { accounts?: ManagedAccount[] } | null)?.accounts ?? []),
+        ];
+      } else {
+        const { data, error } = await manageAccount({ action: "list_student_accounts" });
+        if (error) throw error;
+        accounts = (data as { accounts?: ManagedAccount[] } | null)?.accounts ?? [];
+      }
       list.replaceChildren();
       if (accounts.length === 0) {
         list.append(make("li", undefined, "No accounts yet."));
@@ -114,7 +146,7 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
           statusButton.disabled = true;
           try {
             const { error: statusError } = await manageAccount({
-              action: targetRole === "student" ? "set_student_status" : "set_teacher_status",
+              action: account.role === "student" ? "set_student_status" : "set_teacher_status",
               user_id: account.user_id,
               status: account.status === "active" ? "disabled" : "active",
             });
@@ -128,7 +160,7 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
         });
         actions.append(statusButton);
 
-        if (role === "teacher") {
+        if (account.role === "student") {
           const resetButton = make("button", undefined, "Reset password");
           resetButton.type = "button";
           resetButton.disabled = account.status !== "active";
@@ -155,8 +187,9 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
         item.append(identity, state, actions);
         list.append(item);
       }
-    } catch {
+    } catch (error) {
       list.replaceChildren(make("li", undefined, "Accounts could not be loaded."));
+      report(await accountFailureMessage(error), true);
     }
   };
 
@@ -166,7 +199,7 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
     const formData = new FormData(form);
     try {
       const { data, error } = await manageAccount({
-        action: createAction,
+        action: targetRole === "student" ? "create_student" : "create_teacher",
         display_name: String(formData.get("display_name") ?? ""),
         email: String(formData.get("email") ?? ""),
       });
@@ -176,8 +209,8 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
       showTemporaryPassword(content, temporaryPassword);
       report(`Account created. Give the temporary password directly to the ${targetRole}.`);
       await loadAccounts();
-    } catch {
-      report("The account could not be created. Check the details or contact the administrator.", true);
+    } catch (error) {
+      report(await accountFailureMessage(error), true);
     } finally {
       createButton.disabled = false;
     }
@@ -188,7 +221,7 @@ function renderAccountManagement(card: HTMLElement, role: AuthProfile["role"]) {
   });
 }
 
-function renderStudentProposalForm(card: HTMLElement, profile: AuthProfile) {
+function renderProposalForm(card: HTMLElement, profile: AuthProfile) {
   const details = make("details", "account-management");
   const summary = make("summary", undefined, "Propose a glossary change");
   const content = make("div", "account-card");
@@ -337,7 +370,7 @@ function showTemporaryPassword(container: HTMLElement, password?: string) {
 
 function renderSignIn(host: HTMLElement, message?: string, error = false) {
   const details = make("details", "account-sign-in");
-  const summary = make("summary", undefined, "Course account");
+  const summary = make("summary", undefined, "Sign in");
   const form = make("form");
 
   const emailLabel = make("label", undefined, "Email");
@@ -361,7 +394,10 @@ function renderSignIn(host: HTMLElement, message?: string, error = false) {
   form.append(emailLabel, passwordLabel, submit);
   details.append(summary, form);
   host.replaceChildren(details);
-  if (message) showMessage(host, message, error ? "error" : "info");
+  if (message) {
+    showMessage(form, message, error ? "error" : "info");
+    details.open = true;
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -383,23 +419,24 @@ function renderSignIn(host: HTMLElement, message?: string, error = false) {
 }
 
 function renderAccount(host: HTMLElement, profile: AuthProfile) {
+  const details = make("details", "account-menu");
+  const summary = make("summary", undefined, profile.display_name);
+  details.append(summary);
   const card = make("div", "account-card");
-  const name = make("strong", undefined, profile.display_name);
   const role = make("p", "account-role", roleLabels[profile.role]);
-  card.append(name, role);
+  card.append(role);
 
   if (profile.status !== "active") {
     showMessage(card, "This account is not active. Contact your teacher.", "error");
   } else if (profile.must_change_password) {
-    showPasswordChangeForm(card, true);
+    showMessage(card, "Set a new password to finish setting up your account.");
   } else {
     showMessage(card, "Account tools are being prepared. The public course remains available.");
-    const changePassword = make("details", "account-password-change");
-    const summary = make("summary", undefined, "Change password");
-    changePassword.append(summary);
-    showPasswordChangeForm(changePassword, false);
+    const changePassword = make("button", "account-button-secondary", "Change password");
+    changePassword.type = "button";
+    changePassword.addEventListener("click", () => showPasswordChangeDialog(host, false, card));
     card.append(changePassword);
-    if (profile.role === "student") renderStudentProposalForm(card, profile);
+    if (profile.role !== "superadmin") renderProposalForm(card, profile);
     renderAccountManagement(card, profile.role);
   }
 
@@ -417,17 +454,62 @@ function renderAccount(host: HTMLElement, profile: AuthProfile) {
     }
   });
   card.append(button);
-  host.replaceChildren(card);
+  details.append(card);
+  host.replaceChildren(details);
+  if (profile.status === "active" && profile.must_change_password) {
+    showPasswordChangeDialog(host, true, card);
+  }
 }
 
-function showPasswordChangeForm(container: HTMLElement, required: boolean) {
+async function accountFailureMessage(error: unknown) {
+  const context = (error as { context?: Response } | null)?.context;
+  const status = context?.status;
+  if (status === 400) {
+    const body = await context?.clone().json().catch(() => null) as { code?: string } | null;
+    if (body?.code) return `The account request was rejected (${body.code}). Retry or contact your administrator.`;
+    return "The account request was rejected. Retry or contact your administrator.";
+  }
+  if (status === 401) return "Your session expired. Sign in again and retry.";
+  if (status === 403) {
+    const body = await context?.clone().json().catch(() => null) as { code?: string; error?: string; message?: string } | null;
+    if (body?.code === "UNAUTHORIZED_NO_AUTH_HEADER") {
+      return "Supabase did not receive your sign-in token. Sign out, sign in again, and retry.";
+    }
+    if (body?.error) return `The account request was rejected: ${body.error}`;
+    if (body?.message) return `The account request was rejected: ${body.message}`;
+    const responseText = await context?.clone().text().catch(() => "");
+    if (responseText?.trim()) return `The account request was rejected: ${responseText.trim()}`;
+    return "The request was rejected. Check that the account is active and the site origin is allowed.";
+  }
+  if (status === 404) return "The manage-accounts function is not deployed to this Supabase project yet.";
+  if (status === 503) return "The account function is not configured. Check its Supabase APP_ORIGIN setting.";
+  if (status) return `The account function returned an error (${status}). Check the manage-accounts logs in Supabase.`;
+  const authError = error as { name?: string; message?: string } | null;
+  if (authError?.name === "AuthSessionMissingError") {
+    return "Your sign-in session is missing. Sign out, sign in again, and retry.";
+  }
+  if (authError?.message) {
+    return `Supabase Auth rejected the password: ${authError.message}`;
+  }
+  return "Could not reach manage-accounts. Check that it is deployed and APP_ORIGIN exactly matches this site's address.";
+}
+
+function showPasswordChangeDialog(host: HTMLElement, required: boolean, accountCard: HTMLElement) {
+  const existing = host.querySelector<HTMLDialogElement>(".account-password-dialog");
+  if (existing) {
+    if (!existing.open) existing.showModal();
+    return;
+  }
+
+  const dialog = make("dialog", "account-password-dialog");
+  dialog.setAttribute("aria-labelledby", "password-dialog-title");
+  const heading = make("h2", undefined, required ? "Set your password" : "Change password");
+  heading.id = "password-dialog-title";
   const form = make("form");
-  const heading = make(
+  const description = make(
     "p",
     "account-message",
-    required
-      ? "Set a new password before using account tools."
-      : "Choose a new password for this account.",
+    required ? "Set a new password before using account tools." : "Choose a new password for this account.",
   );
   const passwordLabel = make("label", undefined, "New password");
   const password = make("input");
@@ -449,37 +531,59 @@ function showPasswordChangeForm(container: HTMLElement, required: boolean) {
 
   const submit = make("button", undefined, "Update password");
   submit.type = "submit";
-  form.append(heading, passwordLabel, confirmationLabel, submit);
-  container.append(form);
+  const actions = make("div", "dialog-actions");
+  if (!required) {
+    const cancel = make("button", "account-button-secondary", "Cancel");
+    cancel.type = "button";
+    cancel.addEventListener("click", () => dialog.close());
+    actions.append(cancel);
+  }
+  actions.append(submit);
+  form.append(description, passwordLabel, confirmationLabel, actions);
+  dialog.append(heading, form);
+  host.append(dialog);
+  dialog.addEventListener("cancel", (event) => {
+    if (required) event.preventDefault();
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    dialog.querySelectorAll('.account-message[data-kind="error"]').forEach((item) => item.remove());
     if (password.value !== confirmation.value) {
-      showMessage(container, "The passwords do not match.", "error");
+      showMessage(dialog, "The passwords do not match.", "error");
       return;
     }
     submit.disabled = true;
     submit.textContent = "Updating…";
     try {
-      const { error } = await manageAccount({
-        action: "change_own_password",
-        password: password.value,
-        confirmation: confirmation.value,
-      });
-      if (error) throw error;
+      const { error: passwordError } = await updateOwnPassword(password.value);
+      if (passwordError) throw passwordError;
+      if (required) {
+        const { error: activationError } = await manageAccount({
+          action: "complete_own_password_change",
+        });
+        if (activationError) throw activationError;
+      }
       password.value = "";
       confirmation.value = "";
-    } catch {
+    } catch (error) {
       password.value = "";
       confirmation.value = "";
       submit.disabled = false;
       submit.textContent = "Update password";
-      showMessage(container, "The password could not be updated. Check your connection or contact your teacher.", "error");
+      showMessage(dialog, await accountFailureMessage(error), "error");
       return;
     }
-    const accountControl = container.closest("#account-control");
-    if (accountControl) await refreshAccount(accountControl as HTMLElement);
+    if (required) {
+      await refreshAccount(host);
+      return;
+    }
+    dialog.close();
+    showMessage(accountCard, "Password updated.");
+    dialog.remove();
   });
+
+  dialog.showModal();
 }
 
 let refreshRevision = 0;
@@ -497,6 +601,8 @@ async function refreshAccount(host: HTMLElement) {
     const profile = await getCurrentProfile();
     if (revision !== refreshRevision) return;
     if (!profile) {
+      const details = make("details", "account-menu");
+      details.append(make("summary", undefined, "Account issue"));
       const card = make("div", "account-card");
       showMessage(card, "This account has no active course profile. Contact your teacher.", "error");
       const button = make("button", undefined, "Sign out");
@@ -507,7 +613,8 @@ async function refreshAccount(host: HTMLElement) {
         else renderSignIn(host);
       });
       card.append(button);
-      host.replaceChildren(card);
+      details.append(card);
+      host.replaceChildren(details);
       return;
     }
     renderAccount(host, profile);
