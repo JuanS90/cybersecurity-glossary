@@ -71,18 +71,28 @@ export function renderStudentProposalDialog(card: HTMLElement, profile: AuthProf
   void getPublishedEntries().then((entries) => {
     publishedEntries = entries;
     entry.replaceChildren();
+    const placeholder = make("option", undefined, "Select a published entry");
+    placeholder.value = "";
+    entry.append(placeholder);
     for (const item of entries ?? []) {
       const option = make("option", undefined, item.term);
       option.value = item.id;
       entry.append(option);
     }
-    if (entry.options.length === 0) {
-      entry.append(make("option", undefined, "Published entries are unavailable"));
+    if (!entries) {
+      entry.replaceChildren(make("option", undefined, "Published entries are unavailable"));
+    } else if (entries.length === 0) {
+      entry.replaceChildren(make("option", undefined, "No published entries are available"));
     }
-    entry.disabled = operation.value !== "edit" || entry.options.length === 0 || !publishedEntries;
+    entry.disabled = operation.value !== "edit" || !entries || entries.length === 0;
   }).catch(() => {
     entry.replaceChildren(make("option", undefined, "Published entries are unavailable"));
   });
+
+  const clearFields = () => {
+    for (const field of Object.values(fields)) field.value = "";
+    category.selectedIndex = 0;
+  };
 
   const applySelectedEntry = () => {
     const selected = publishedEntries?.find((item) => item.id === entry.value);
@@ -96,8 +106,13 @@ export function renderStudentProposalDialog(card: HTMLElement, profile: AuthProf
   };
   operation.addEventListener("change", () => {
     const editing = operation.value === "edit";
-    entry.disabled = !editing || !publishedEntries || entry.options.length === 0;
-    if (editing) applySelectedEntry();
+    entry.disabled = !editing || !publishedEntries || publishedEntries.length === 0;
+    if (editing) {
+      applySelectedEntry();
+    } else {
+      entry.selectedIndex = 0;
+      clearFields();
+    }
   });
   entry.addEventListener("change", applySelectedEntry);
   openButton.addEventListener("click", () => {
@@ -108,7 +123,11 @@ export function renderStudentProposalDialog(card: HTMLElement, profile: AuthProf
     event.preventDefault();
     const isEdit = operation.value === "edit";
     if (isEdit && !publishedEntries?.some((item) => item.id === entry.value)) {
-      message.textContent = "The published entry list is unavailable. Try again when the glossary service is available.";
+      message.textContent = !publishedEntries
+        ? "The published entry list is unavailable. Try again when the glossary service is available."
+        : publishedEntries.length === 0
+          ? "There are no published entries available to edit."
+          : "Select a published entry to edit.";
       message.dataset.kind = "error";
       return;
     }
